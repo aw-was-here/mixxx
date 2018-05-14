@@ -23,6 +23,7 @@ class Deck;
 class EffectsManager;
 class EngineMaster;
 class Library;
+class MetadataBroadcast;
 class Microphone;
 class PreviewDeck;
 class Sampler;
@@ -293,4 +294,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
     QMap<ChannelHandle, BaseTrackPlayer*> m_players;
+
+    MetadataBroadcast *m_pMetadataBroadcast;
 };
