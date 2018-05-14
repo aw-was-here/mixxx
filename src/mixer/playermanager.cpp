@@ -22,6 +22,7 @@
 #include "util/defs.h"
 #include "util/logger.h"
 #include "util/sleepableqthread.h"
+#include "broadcast/metadatabroadcast.h"
 
 namespace {
 
@@ -60,6 +61,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey("[Master]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+          m_pMetadataBroadcast(new MetadataBroadcast()),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
@@ -102,6 +104,7 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumPreviewDecks;
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
+    delete m_pMetadataBroadcast;
 
     if (m_pTrackAnalysisScheduler) {
         m_pTrackAnalysisScheduler->stop();

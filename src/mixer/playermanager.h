@@ -24,6 +24,7 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
+class MetadataBroadcast;
 class VisualsManager;
 class ControlProxy;
 
@@ -276,4 +277,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
     QMap<ChannelHandle, BaseTrackPlayer*> m_players;
+
+    MetadataBroadcast *m_pMetadataBroadcast;
 };
