@@ -159,14 +159,6 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     }
 }
 
-void PlayerInfo::onTrackPaused(const QString& group, TrackPointer pTrack) {
-    emit(trackPaused(group, pTrack));
-}
-
-void PlayerInfo::onTrackResumed(const QString& group, TrackPointer pTrack) {
-    emit(trackResumed(group, pTrack));
-}
-
 int PlayerInfo::getCurrentPlayingDeck() {
     QMutexLocker locker(&m_mutex);
     return m_currentlyPlayingDeck;
