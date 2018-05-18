@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QElapsedTimer>
+#include <QMetaObject>
 
 #include "audio/streaminfo.h"
 #include "sources/metadatasource.h"
@@ -16,6 +17,8 @@
 #include "util/fileaccess.h"
 #include "util/memory.h"
 #include "waveform/waveform.h"
+
+struct Connection;
 
 class Track : public QObject {
     Q_OBJECT
@@ -594,6 +597,8 @@ class Track : public QObject {
 
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
+
+    QMetaObject::Connection m_timerConnection;
 
     QElapsedTimer m_playedSincePause;
 

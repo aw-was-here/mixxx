@@ -113,8 +113,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey("[Master]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-          m_pMetadataBroadcast(new MetadataBroadcast()),
-          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+          m_pMetadataBroadcast(new MetadataBroadcast()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
@@ -798,25 +798,25 @@ void PlayerManager::onTrackAnalysisFinished() {
 }
 
 void PlayerManager::slotTrackPaused(TrackPointer pPausedTrack) {
-    if (!pPausedTrack)
-        return;    
-    QMutexLocker locker(&m_mutex);
-    bool allPaused = true;
-    foreach (Deck *deck,m_decks) {
-        if (deck->getLoadedTrack() == pPausedTrack && !deck->isTrackPaused()) {
-            allPaused = false;
-            break;
-        } 
-    }
-    if (allPaused)
-        pPausedTrack->pausePlayedTime();    
+    // if (!pPausedTrack)
+    //     return;    
+    // QMutexLocker locker(&m_mutex);
+    // bool allPaused = true;
+    // foreach (Deck *deck,m_decks) {
+    //     if (deck->getLoadedTrack() == pPausedTrack && !deck->isTrackPaused()) {
+    //         allPaused = false;
+    //         break;
+    //     } 
+    // }
+    // if (allPaused)
+    //     pPausedTrack->pausePlayedTime();    
 }
 
 void PlayerManager::slotTrackResumed(TrackPointer pPausedTrack) {
-    if (!pPausedTrack)
-        return;
-    QMutexLocker locker(&m_mutex);
-    pPausedTrack->resumePlayedTime();
+    // if (!pPausedTrack)
+    //     return;
+    // QMutexLocker locker(&m_mutex);
+    // pPausedTrack->resumePlayedTime();
 }
 
 void PlayerManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -844,13 +844,14 @@ void PlayerManager::slotPlayerEmpty() {
 }
 
 void PlayerManager::resetTrack(Deck *deck) {
-    QMutexLocker locker(&m_mutex);
-    Deck *loadingDeck = qobject_cast<Deck*>(sender());
-    foreach (trackDeckPair pair,m_tracksToBeReset) {
-        if (loadingDeck == pair.pDeck) {
-            pair.pTrack->resetPlayedTime();
-            break;
-        }
-    }
+    // QMutexLocker locker(&m_mutex);    
+    // foreach (trackDeckPair pair,m_tracksToBeReset) {
+    //     if (deck == pair.pDeck) {
+    //         disconnect(pair.pTrack.get(),SIGNAL(readyToBeScrobbled(Track*)),
+    //                    m_pMetadataBroadcast,SLOT(slotReadyToBeScrobbled(Track*)));
+    //         pair.pTrack->resetPlayedTime();
+    //         break;
+    //     }
+    // }
 }
 
