@@ -5,6 +5,7 @@
 #include <QMutexLocker>
 #include <QObject>
 #include <QUrl>
+#include <QElapsedTimer>
 
 #include "audio/streaminfo.h"
 #include "sources/metadatasource.h"
@@ -372,6 +373,7 @@ class Track : public QObject {
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
     void clean(TrackId trackId);
+    void readyToBeScrobbled(Track *pTrack);
 
   private slots:
     void slotCueUpdated();
@@ -483,8 +485,17 @@ class Track : public QObject {
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
+    QElapsedTimer m_playedSincePause;
+
+    int m_timerId;
+
+    qint64 m_msPlayed;
+
     friend class TrackDAO;
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
+  
+  protected:
+    void timerEvent(QTimerEvent *timerEvent) override;
 };
