@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QElapsedTimer>
+#include <QMetaObject>
 
 #include "audio/streaminfo.h"
 #include "sources/metadatasource.h"
@@ -15,8 +16,11 @@
 #include "track/track_decl.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
+#include "track/trackplaytimers.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
+
+struct Connection;
 
 class Track : public QObject {
     Q_OBJECT
@@ -125,13 +129,7 @@ class Track : public QObject {
     QString getDurationTextMilliseconds() const {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
-
-    void pausePlayedTime();
-
-    void resumePlayedTime();
-
-    void resetPlayedTime();
-
+    
     // Set BPM
     double setBpm(double);
     // Returns BPM
@@ -373,7 +371,6 @@ class Track : public QObject {
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
     void clean(TrackId trackId);
-    void readyToBeScrobbled(Track *pTrack);
 
   private slots:
     void slotCueUpdated();
@@ -485,17 +482,10 @@ class Track : public QObject {
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
-    QElapsedTimer m_playedSincePause;
-
-    int m_timerId;
-
-    qint64 m_msPlayed;
+    QMetaObject::Connection m_timerConnection;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
-  
-  protected:
-    void timerEvent(QTimerEvent *timerEvent) override;
 };

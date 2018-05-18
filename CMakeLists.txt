@@ -781,8 +781,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
   src/track/tracknumbers.cpp
+  src/track/trackplaytimers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/track/tracktiminginfo.cpp
   src/track/taglib/trackmetadata_ape.cpp
   src/track/taglib/trackmetadata_common.cpp
   src/track/taglib/trackmetadata_file.cpp

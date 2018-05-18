@@ -75,8 +75,7 @@ Track::Track(
           m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
           m_record(trackId),
           m_bDirty(false),
-          m_bMarkedForMetadataExport(false),
-          m_msPlayed(0) {
+          m_bMarkedForMetadataExport(false) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
         kLogger.debug()
@@ -1510,40 +1509,5 @@ void Track::updateStreamInfoFromSource(
     }
     if (importCueInfos) {
         emit cuesUpdated();
-    }
-}
-
-void Track::pausePlayedTime() {
-    QMutexLocker locker(&m_qMutex);
-    if (m_playedSincePause.isValid()) {
-        killTimer(m_timerId);
-        m_msPlayed += m_playedSincePause.elapsed();
-        m_playedSincePause.invalidate();
-    }        
-}
-
-void Track::resumePlayedTime() {
-    QMutexLocker locker(&m_qMutex);
-    if (!m_playedSincePause.isValid()) {
-        m_timerId = startTimer(1000);
-        m_playedSincePause.start();
-    }
-}
-
-void Track::resetPlayedTime() {
-    QMutexLocker locker(&m_qMutex);
-    m_playedSincePause.invalidate();
-    killTimer(m_timerId);
-}
-
-void Track::timerEvent(QTimerEvent *timerEvent) {
-    if(timerEvent->timerId() == m_timerId) {
-        qint64 msInTimer = 0;
-        if (m_playedSincePause.isValid())
-            msInTimer = m_playedSincePause.elapsed();
-        if (static_cast<double>((msInTimer + m_msPlayed) / Q_INT64_C(1000)) >=
-            getDuration(DurationRounding::SECONDS)) 
-                emit(readyToBeScrobbled(this));
-            
     }
 }
