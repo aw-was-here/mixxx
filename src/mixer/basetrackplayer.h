@@ -50,9 +50,10 @@ class BaseTrackPlayer : public BasePlayer {
     void trackUnloaded(TrackPointer pUnloadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
-    void noVinylControlInputConfigured();
+    void trackLoadFailed(TrackPointer pFailedTrack);
     void trackPaused(TrackPointer pPausedTrack);
     void trackResumed(TrackPointer pResumedTrack);
+    void noVinylControlInputConfigured();
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
