@@ -25,7 +25,6 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
-class MetadataBroadcast;
 class VisualsManager;
 class ControlProxy;
 
