@@ -1,7 +1,7 @@
 #include "track/tracktiminginfo.h"
 
 TrackTimingInfo::TrackTimingInfo(TrackPointer pTrack) 
-    : m_pElapsedTimer(new TrackTimers::ElapsedTimerQt()), 
+    : m_pElapsedTimer(new TrackTimers::ElapsedTimerQt()),
       m_pTimer(new TrackTimers::GUITickTimer()),
       m_pTrackPtr(pTrack),
       m_playedMs(0),
@@ -59,11 +59,10 @@ void TrackTimingInfo::slotCheckIfScrobbable() {
         return;
     }
     if (static_cast<double>(msInTimer + m_playedMs) / 1000.0 >=
-        m_pTrackPtr->getDuration() / 2.0) {
-            m_isTrackScrobbable = true;
-            emit(readyToBeScrobbled(m_pTrackPtr));
-    }
-    else {
+            m_pTrackPtr->getDuration() / 2.0) {
+        m_isTrackScrobbable = true;
+        emit(readyToBeScrobbled(m_pTrackPtr));
+    } else {
         m_pTimer->start(1000);
     } 
 }
