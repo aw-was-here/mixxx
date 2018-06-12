@@ -5,6 +5,7 @@
 #include <QAbstractItemDelegate>
 #include <QMessageBox>
 #include <QHeaderView>
+#include <QFileDialog>
 
 // shout.h checks for WIN32 to see if we are on Windows
 #ifdef WIN64
@@ -94,6 +95,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
             &QPushButton::clicked,
             this,
             &DlgPrefBroadcast::btnDisconnectAllClicked);
+
+    connect(btnChangeFilePath, SIGNAL(pressed()),
+            this,SLOT(btnChangeNowPlayingFilePathClicked()));
 
     // Highlight first row
     connectionList->selectRow(0);
@@ -623,6 +627,16 @@ void DlgPrefBroadcast::btnDisconnectAllClicked() {
         m_pBroadcastEnabled->set(false);
         broadcastEnabledChanged(0.0);
     }
+}
+
+void DlgPrefBroadcast::btnChangeNowPlayingFilePathClicked() {
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        "Save NowPlaying.txt file",
+        "./",
+        "Text files (*.txt)"
+    );
+    filePathLine->setText(filePath);
 }
 
 void DlgPrefBroadcast::onSectionResized() {
