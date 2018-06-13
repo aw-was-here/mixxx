@@ -111,7 +111,8 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
         VERIFY_OR_DEBUG_ASSERT(trackInfo) {
             continue;
         }
-        if (trackInfo->m_pTrack == pPausedTrack) {
+        if (!trackInfo->m_pTrack.expired() &&
+            trackInfo->m_pTrack.lock() == pPausedTrack) {
             pausedTrackInfo = trackInfo;
             for (QString playerGroup : trackInfo->m_players) {
                 BaseTrackPlayer *player = m_pManager->getPlayer(playerGroup);
@@ -150,7 +151,8 @@ void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
             VERIFY_OR_DEBUG_ASSERT(trackInfo) {
                 continue;
             }
-            if (trackInfo->m_pTrack == pResumedTrack && 
+            if (!trackInfo->m_pTrack.expired() &&
+                trackInfo->m_pTrack.lock() == pResumedTrack &&
                 trackInfo->m_trackInfo->isTimerPaused()) {
                 trackInfo->m_trackInfo->resumePlayedTime();
                 break;
@@ -181,7 +183,8 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
     }
     bool trackAlreadyAdded = false;
     for (TrackInfo *trackInfo : m_trackList) {        
-        if (trackInfo->m_pTrack == pNewTrack) {
+        if (!trackInfo->m_pTrack.expired() &&
+            trackInfo->m_pTrack.lock() == pNewTrack) {
             trackInfo->m_players.append(player->getGroup());               
             trackAlreadyAdded = true;
             break;
@@ -212,10 +215,12 @@ void ScrobblingManager::resetTracks() {
              it != m_trackList.end(); 
              ++it) {
             TrackInfo *trackInfo = *it;
-            if (trackInfo->m_pTrack == candidateTrack.m_pTrack) {                                 
+            if (!trackInfo->m_pTrack.expired() &&
+                !candidateTrack.m_pTrack.expired() &&
+                trackInfo->m_pTrack.lock() == candidateTrack.m_pTrack.lock()) {
                 if (playerNotInTrackList(trackInfo->m_players,
                                          candidateTrack.m_playerGroup) ||
-                    isStrayFromEngine(trackInfo->m_pTrack,
+                    isStrayFromEngine(trackInfo->m_pTrack.lock(),
                                       candidateTrack.m_playerGroup)) {
                     break;                      
                 }
@@ -255,7 +260,7 @@ void ScrobblingManager::deletePlayerFromList(const QString &player,
 void ScrobblingManager::deleteTrackInfoAndNotify(QLinkedList<TrackInfo*>::iterator &it) {
     (*it)->m_trackInfo->pausePlayedTime();
     (*it)->m_trackInfo->resetPlayedTime();
-    m_pBroadcaster->trackUnloaded((*it)->m_pTrack);                
+    m_pBroadcaster->trackUnloaded(TrackPointer());
     delete *it;
     m_trackList.erase(it);
 }
@@ -288,7 +293,8 @@ void ScrobblingManager::slotCheckAudibleTracks() {
         bool inaudible = true;
         for (QString playerGroup : trackInfo->m_players) {
             BaseTrackPlayer *player = m_pManager->getPlayer(playerGroup);
-            if (m_pAudibleStrategy->isTrackAudible(trackInfo->m_pTrack,player)) {
+            if (!trackInfo->m_pTrack.expired() &&
+                m_pAudibleStrategy->isTrackAudible(trackInfo->m_pTrack.lock(),player)) {
                 inaudible = false;
                 break;
             }
