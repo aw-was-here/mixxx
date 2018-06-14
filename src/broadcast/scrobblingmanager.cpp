@@ -142,11 +142,11 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
 }
 
 void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
-    BaseTrackPlayer *player = qobject_cast<Deck*>(sender());
+    BaseTrackPlayer *player = qobject_cast<BaseTrackPlayer*>(sender());
     VERIFY_OR_DEBUG_ASSERT(player) {
         return;
     }
-    if (m_pAudibleStrategy->isTrackAudible(pResumedTrack, player)) {       
+    if (m_pAudibleStrategy->isTrackAudible(pResumedTrack,player)) {       
         for (TrackInfo *trackInfo : m_trackList) {
             VERIFY_OR_DEBUG_ASSERT(trackInfo) {
                 continue;
