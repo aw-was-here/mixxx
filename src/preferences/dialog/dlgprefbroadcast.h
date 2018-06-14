@@ -27,6 +27,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void slotApply() override;
     void slotUpdate() override;
     void slotResetToDefaults() override;
+    void slotCancel() override;
     void broadcastEnabledChanged(double value);
     void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
@@ -51,9 +52,11 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void selectConnectionRowByName(const QString& rowName);
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
+    void setNowPlayingFileValuesFromSettings();
 
     BroadcastSettingsPointer m_pBroadcastSettings;
     BroadcastSettingsModel* m_pSettingsModel;
     ControlProxy* m_pBroadcastEnabled, m_nowPlayingFileChanged;
     BroadcastProfilePtr m_pProfileListSelection;
+    bool m_bHasFilePathChanged;
 };
