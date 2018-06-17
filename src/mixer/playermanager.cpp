@@ -51,6 +51,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pEngine(pEngine),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
+          m_scrobblingManager(this, m_pConfig),
           m_pCONumDecks(new ControlObject(
                   ConfigKey("[Master]", "num_decks"), true, true)),
           m_pCONumSamplers(new ControlObject(
@@ -61,7 +62,6 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey("[Master]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-          m_scrobblingManager(this, m_pConfig),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
