@@ -377,6 +377,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
   src/broadcast/filelistener.cpp
+  src/broadcast/listenersfinder.cpp
   src/broadcast/metadatabroadcast.cpp
   src/broadcast/scrobblingmanager.cpp
   src/control/control.cpp
@@ -684,6 +685,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/broadcastsettings_legacy.cpp
   src/preferences/broadcastsettingsmodel.cpp
   src/preferences/configobject.cpp
+  src/preferences/dialog/dlgfilelistenerbox.ui
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -725,6 +727,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
   src/preferences/colorpalettesettings.cpp
+  src/preferences/dialog/dlgprefmetadata.cpp
+  src/preferences/dialog/dlgprefmetadatadlg.ui
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
