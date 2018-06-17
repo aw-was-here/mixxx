@@ -2,9 +2,6 @@
 
 #include "mixer/playerinfo.h"
 
-MetadataBroadcaster::MetadataBroadcaster() {
-}
-
 void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
     for (auto it = m_trackedTracks.begin();
          it != m_trackedTracks.end();
@@ -42,8 +39,8 @@ const QList<TrackId> MetadataBroadcaster::getTrackedTracks() {
 }
 
 MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService
-    (std::unique_ptr<ScrobblingService> &&newService) {
-    m_scrobblingServices.push_back(std::move(newService));
+    (const ScrobblingServicePtr &newService) {
+    m_scrobblingServices.push_back(newService);
     return *this;    
 }
 

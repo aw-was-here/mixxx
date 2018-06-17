@@ -10,6 +10,14 @@
 #include <QTabBar>
 #include <QTabWidget>
 
+#include <QResizeEvent>
+#include <QScreen>
+
+#include "preferences/dialog/dlgpreferences.h"
+
+#include "preferences/dialog/dlgprefsound.h"
+#include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefmetadata.h"
 #include "controllers/dlgprefcontrollers.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
@@ -202,6 +210,12 @@ DlgPreferences::DlgPreferences(
             tr("Live Broadcasting"),
             "ic_preferences_broadcast.svg");
 #endif // __BROADCAST__
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefMetadata(this),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)), 
+            tr("Metadata Broadcast"),
+            "ic_preferences_broadcast.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefRecord(this, m_pConfig),
