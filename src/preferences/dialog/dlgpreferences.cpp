@@ -173,7 +173,7 @@ DlgPreferences::DlgPreferences(
             createTreeItem(tr("Live Broadcasting"), QIcon(":/images/preferences/ic_preferences_broadcast.svg"))));
 #endif
     addPageWidget(PreferencesPage(
-            new DlgPrefMetadata(this),
+            new DlgPrefMetadata(this, m_pConfig),
             createTreeItem(tr("Metadata Broadcast"), QIcon(":/images/preferences/ic_preferences_broadcast.png"))));
 
     addPageWidget(PreferencesPage(

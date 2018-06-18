@@ -199,10 +199,6 @@ BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
     return it != m_profiles.end() ? it.value() : BroadcastProfilePtr(nullptr);
 }
 
-UserSettingsPointer BroadcastSettings::getUserSettings() {
-    return m_pConfig;
-}
-
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
     return m_profiles.values();
 }
