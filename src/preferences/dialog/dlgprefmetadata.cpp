@@ -1,32 +1,31 @@
 #include <QLinkedList>
 #include <QCheckBox>
+#include <QTableWidgetItem>
+
 #include "broadcast/listenersfinder.h"
 #include "preferences/dialog/dlgprefmetadata.h"
+#include "preferences/dialog/ui_dlgfilelistenerbox.h"
 
 DlgPrefMetadata::DlgPrefMetadata(QWidget *pParent,UserSettingsPointer pSettings)
-        : DlgPreferencePage(pParent) {
+        : DlgPreferencePage(pParent),
+          fileListenerBox(new Ui::fileListenerBox){
     setupUi(this);
-    QLinkedList<ScrobblingServicePtr> listeners =
-            ListenersFinder::instance(pSettings).getAllServices();
-    listenersTableWidget->setColumnCount(2);
-    listenersTableWidget->setRowCount(listeners.size());
-    QStringList headerLabels = {"Enabled","Name"};
-    listenersTableWidget->setHorizontalHeaderLabels(headerLabels);
-    listenersTableWidget->verticalHeader()->setVisible(false);
-    listenersTableWidget->setShowGrid(false);
-    listenersTableWidget->horizontalHeader()->setStretchLastSection(true);
-    unsigned int currentRow = 0;
-    for (ScrobblingServicePtr pService : listeners) {
-        QTableWidgetItem *enabledItem = new QTableWidgetItem;
-        enabledItem->setFlags(Qt::NoItemFlags);
-        listenersTableWidget->setItem(currentRow,0,enabledItem);
-        listenersTableWidget->setCellWidget(currentRow,0,new QCheckBox);
-        QTableWidgetItem *nameItem = new QTableWidgetItem(pService->getName());
-        nameItem->setFlags(Qt::ItemIsSelectable);
-        listenersTableWidget->setItem(currentRow,1,nameItem);
-        ++currentRow;
-    }
+    setupTableWidget(pSettings);
+}
 
+void DlgPrefMetadata::setupTableWidget(UserSettingsPointer pSettings) {
+    Q_UNUSED(pSettings);
+}
+
+DlgPrefMetadata::~DlgPrefMetadata() {
+    delete fileListenerBox;
+}
+
+void DlgPrefMetadata::slotCurrentListenerChanged(
+        const QModelIndex& previous,
+        const QModelIndex& current) {
+    Q_UNUSED(previous);
+    Q_UNUSED(current);
 }
 
 void DlgPrefMetadata::slotApply() {
@@ -40,27 +39,4 @@ void DlgPrefMetadata::slotResetToDefaults() {
 
 void DlgPrefMetadata::slotUpdate() {
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
