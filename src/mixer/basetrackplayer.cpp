@@ -817,5 +817,5 @@ void BaseTrackPlayerImpl::setReplayGain(double value) {
 }
 
 bool BaseTrackPlayerImpl::isTrackPaused() const {
-    return m_pPlay->toBool();
+    return !m_pPlay->toBool();
 }
