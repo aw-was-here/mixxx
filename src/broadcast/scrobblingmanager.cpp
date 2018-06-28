@@ -132,8 +132,8 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
     }
 }
 
-void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
-    BaseTrackPlayer *player = qobject_cast<BaseTrackPlayer*>(sender());
+void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack, const QString &playerGroup) {
+    BaseTrackPlayer *player = m_pManager->getPlayer(playerGroup);
     DEBUG_ASSERT(player);       
     if (m_pAudibleStrategy->isTrackAudible(pResumedTrack,player)) {       
         for (auto &trackInfoPtr : m_trackList) {
@@ -147,26 +147,20 @@ void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
     }
 }
 
-void ScrobblingManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+void ScrobblingManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack, const QString &playerGroup) {
     Q_UNUSED(pNewTrack);
-    BaseTrackPlayer *sourcePlayer = 
-        qobject_cast<BaseTrackPlayer*>(sender());
-    DEBUG_ASSERT(sourcePlayer);
     if (pOldTrack) {
         m_tracksToBeReset.append(TrackToBeReset(pOldTrack,
-            sourcePlayer->getGroup()));
+            playerGroup));
     }
 }
 
-void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
+void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString &playerGroup) {
     //Empty player gives a null pointer.
-    if (!pNewTrack) {
-        return;
-    }
-    BaseTrackPlayer *player = qobject_cast<BaseTrackPlayer*>(sender());    
-    VERIFY_OR_DEBUG_ASSERT(player) {
-        return;
-    }
+    if (!pNewTrack)
+        return;          
+    BaseTrackPlayer *player = m_pManager->getPlayer(playerGroup);
+    DEBUG_ASSERT(player);    
     bool trackAlreadyAdded = false;
     for (auto &trackInfoPtr : m_trackList) {
         std::shared_ptr<Track> pTrack = trackInfoPtr->m_pTrack.lock();
