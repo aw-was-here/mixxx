@@ -2,6 +2,7 @@
 
 #include <QMutexLocker>
 
+#include <broadcast/listenersfinder.h>
 #include "control/controlobject.h"
 #include "effects/effectrack.h"
 #include "effects/effectsmanager.h"
@@ -78,6 +79,12 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     m_pSamplerBank = new SamplerBank(this);
 
     m_cloneTimer.start();
+    
+    MetadataBroadcaster *broadcaster = new MetadataBroadcaster;
+    for (auto service : ListenersFinder::instance(pConfig).getAllServices()) {
+        broadcaster->addNewScrobblingService(service);
+    }
+    m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 
 PlayerManager::~PlayerManager() {
