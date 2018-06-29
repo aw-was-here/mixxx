@@ -43,7 +43,7 @@ class TotalVolumeThreshold : public TrackAudibleStrategy {
 class ScrobblingManager : public QObject {
     Q_OBJECT
   public:
-    ScrobblingManager(PlayerManagerInterface *manager,UserSettingsPointer settings);
+    ScrobblingManager(PlayerManagerInterface *manager, UserSettingsPointer settings);
     ~ScrobblingManager() = default;
     void setAudibleStrategy(TrackAudibleStrategy *pStrategy);
     void setMetadataBroadcaster(MetadataBroadcasterInterface *pBroadcast);

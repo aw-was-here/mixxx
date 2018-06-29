@@ -2,6 +2,11 @@
 
 #include "mixer/playerinfo.h"
 
+MetadataBroadcaster::MetadataBroadcaster()
+        :  m_gracePeriodSeconds(5*60) {
+
+}
+
 void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
     for (auto it = m_trackedTracks.begin();
          it != m_trackedTracks.end();

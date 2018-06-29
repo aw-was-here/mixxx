@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 
+#include <broadcast/listenersfinder.h>
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -130,6 +131,12 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     m_pSamplerBank = new SamplerBank(m_pConfig, this);
 
     m_cloneTimer.start();
+    
+    MetadataBroadcaster *broadcaster = new MetadataBroadcaster;
+    for (auto service : ListenersFinder::instance(pConfig).getAllServices()) {
+        broadcaster->addNewScrobblingService(service);
+    }
+    m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 
 PlayerManager::~PlayerManager() {
