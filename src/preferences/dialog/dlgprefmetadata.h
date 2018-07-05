@@ -1,10 +1,11 @@
 #pragma once
 
-#include "preferences/metadatafilesettings.h"
 #include "broadcast/scrobblingservice.h"
-#include "preferences/usersettings.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefmetadatadlg.h"
+#include "preferences/metadatafilesettings.h"
+#include "preferences/listenbrainzsettings.h"
+#include "preferences/usersettings.h"
 
 namespace Ui {
     class fileListenerBox;
@@ -34,5 +35,8 @@ class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg 
   private:
     UserSettingsPointer m_pSettings;
     MetadataFileSettings *m_pFileSettings;
+    ListenBrainzSettingsManager *m_pListenBrainzSettings;
     void setFileSettings();
+
+    void setListenBrainzSettings();
 };

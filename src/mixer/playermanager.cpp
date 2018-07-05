@@ -405,6 +405,7 @@ void PlayerManager::addDeckInner() {
         return;
     }
 
+
     int deckIndex = m_decks.count();
 
     Deck* pDeck = new Deck(this,
@@ -428,13 +429,13 @@ void PlayerManager::addDeckInner() {
 
     connect(pDeck,&Deck::trackPaused,
             &m_scrobblingManager, &ScrobblingManager::slotTrackPaused);
-    connect(pDeck,&Deck::trackResumed,
+    connect(pDeck,&Deck::trackResumed, this,
             [this,group] (TrackPointer pTrack) -> void
             {m_scrobblingManager.slotTrackResumed(pTrack,group);});
-    connect(pDeck,&Deck::newTrackLoaded,
+    connect(pDeck,&Deck::newTrackLoaded, this,
             [this,group] (TrackPointer pTrack) -> void
             {m_scrobblingManager.slotNewTrackLoaded(pTrack,group);});
-    connect(pDeck,&Deck::loadingTrack,
+    connect(pDeck,&Deck::loadingTrack, this,
             [this,group] (TrackPointer pOldTrack,TrackPointer pNewTrack) -> void
             {m_scrobblingManager.slotLoadingTrack(pOldTrack,pNewTrack,group);});
     connect(pDeck,SIGNAL(playerEmpty()),

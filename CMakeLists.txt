@@ -878,6 +878,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/colorpalettesettings.cpp
   src/preferences/dialog/dlgprefmetadata.cpp
   src/preferences/dialog/dlgprefmetadatadlg.ui
+  src/preferences/listenbrainzsettings.cpp
   src/preferences/metadatafilesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
