@@ -2,9 +2,8 @@
 
 #include <QRegularExpression>
 
-#include <broadcast/listenersfinder.h>
-#include <broadcast/filelistener.h>
-#include <broadcast/listenbrainzservice.h>
+#include "broadcast/filelistener.h"
+#include "broadcast/listenbrainzservice.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -104,7 +103,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
           m_pEngine(pEngine),
-          m_scrobblingManager(this, pConfig),
+          m_scrobblingManager(this),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(new ControlObject(
