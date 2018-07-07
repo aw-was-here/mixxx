@@ -66,7 +66,7 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface *manager)
            m_GuiTickObject(ConfigKey("[Master]","guiTick50ms")){
     connect(m_pTimer.get(),SIGNAL(timeout()),
             this,SLOT(slotCheckAudibleTracks()));
-    m_GuiTickObject.connectValueChanged(this,SLOT(slotGuiTick(double)));
+    m_GuiTickObject.connectValueChanged(this, &ScrobblingManager::slotGuiTick);
     m_pTimer->start(1000);
 }
 
