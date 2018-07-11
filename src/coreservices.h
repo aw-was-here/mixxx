@@ -22,6 +22,7 @@ class VinylControlManager;
 class TrackCollectionManager;
 class Library;
 class LV2Backend;
+class MixxxMainWindow;
 
 namespace mixxx {
 
@@ -37,7 +38,7 @@ class CoreServices : public QObject {
     void initializeSettings();
     // FIXME: should be private, but WMainMenuBar needs it initialized early
     void initializeKeyboard();
-    void initialize(QApplication* pApp);
+    void initialize(QApplication* pApp, MixxxMainWindow* pMixxx);
     void shutdown();
 
     std::shared_ptr<KeyboardEventFilter> getKeyboardEventFilter() const {

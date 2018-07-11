@@ -114,7 +114,7 @@ void CoreServices::initializeSettings() {
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 
-void CoreServices::initialize(QApplication* pApp) {
+void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
     m_runtime_timer.start();
     mixxx::Time::start();
     ScopedTimer t("CoreServices::initialize");
@@ -229,7 +229,8 @@ void CoreServices::initialize(QApplication* pApp) {
             pConfig,
             m_pSoundManager.get(),
             m_pEffectsManager.get(),
-            m_pEngine.get());
+            m_pEngine.get(),
+            pMixxx);
     // TODO: connect input not configured error dialog slots
     PlayerInfo::create();
 
