@@ -6,7 +6,6 @@
 #include <QStringList>
 
 #include "broadcast/defs_broadcast.h"
-#include "broadcast/filelistener.h"
 #include "defs_urls.h"
 #include "moc_broadcastsettings.cpp"
 #include "util/logger.h"

@@ -205,7 +205,7 @@ void CoreServices::initializeLogging() {
             logFlags);
 }
 
-void CoreServices::initialize(QApplication* pApp) {
+void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
     VERIFY_OR_DEBUG_ASSERT(!m_isInitialized) {
         return;
     }
@@ -291,7 +291,8 @@ void CoreServices::initialize(QApplication* pApp) {
             pConfig,
             m_pSoundManager.get(),
             m_pEffectsManager.get(),
-            m_pEngine.get());
+            m_pEngine.get(),
+            pMixxx);
     // TODO: connect input not configured error dialog slots
     PlayerInfo::create();
 

@@ -57,7 +57,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                 &mixxx::CoreServices::initializationProgressUpdate,
                 &mainWindow,
                 &MixxxMainWindow::initializationProgressUpdate);
-        pCoreServices->initialize(pApp);
+        pCoreServices->initialize(pApp, &mainWindow);
         mainWindow.initialize();
 
         // If startup produced a fatal error, then don't even start the

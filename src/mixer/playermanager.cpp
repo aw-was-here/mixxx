@@ -2,8 +2,8 @@
 
 #include <QRegularExpression>
 
-#include "broadcast/filelistener.h"
-#include "broadcast/listenbrainzservice.h"
+#include "broadcast/filelistener/filelistener.h"
+#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -97,7 +97,8 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        EngineMaster* pEngine)
+        EngineMaster* pEngine, 
+        MixxxMainWindow* pWindow)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
@@ -116,7 +117,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey("[Master]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+          m_mpris(pWindow) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
