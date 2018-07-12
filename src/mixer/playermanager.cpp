@@ -4,6 +4,7 @@
 
 #include "broadcast/filelistener/filelistener.h"
 #include "broadcast/listenbrainzlistener/listenbrainzservice.h"
+#include "broadcast/mpris/mprisservice.h"
 #include "control/controlobject.h"
 #include "effects/effectrack.h"
 #include "effects/effectsmanager.h"
@@ -65,8 +66,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey("[Master]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-          m_mpris(pWindow) {
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
@@ -86,6 +86,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     MetadataBroadcaster *broadcaster = new MetadataBroadcaster;
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
+    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow)));
     m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 
