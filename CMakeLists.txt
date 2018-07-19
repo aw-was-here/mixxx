@@ -2219,6 +2219,7 @@ find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
     Concurrent
     Core
+    DBus
     Gui
     Network
     OpenGL
@@ -2238,6 +2239,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt${QT_VERSION_MAJOR}::Concurrent
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::DBus
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::OpenGL
   Qt${QT_VERSION_MAJOR}::PrintSupport

@@ -3,6 +3,7 @@
 #include "mixer/deck.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
+#include "mixxxmainwindow.h"
 
 namespace {
 

@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QDBusMessage>
 #include <QDBusConnection>
-#include <mixxx.h>
 
 #include "broadcast/mpris/mediaplayer2player.h"
 
