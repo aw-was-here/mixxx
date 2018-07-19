@@ -5,9 +5,11 @@
 #include "broadcast/mpris/mediaplayer2player.h"
 
 MediaPlayer2Player::MediaPlayer2Player(PlayerManager *playerManager,
-                                       QObject *parent)
+                                       QObject *parent,
+                                       MixxxMainWindow *pWindow,
+                                       Mpris *pMpris)
         :  QDBusAbstractAdaptor(parent),
-           m_mprisPlayer(playerManager, nullptr)
+           m_mprisPlayer(playerManager, pWindow, pMpris)
 {
 }
 
