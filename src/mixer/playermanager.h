@@ -12,7 +12,6 @@
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 #include "broadcast/scrobblingmanager.h"
-#include "broadcast/mpris/mpris.h"
 
 class Auxiliary;
 class BaseTrackPlayer;
