@@ -40,7 +40,7 @@ bool MediaPlayer2::canRaise() const {
 }
 
 bool MediaPlayer2::hasTrackList() const {
-    return true;
+    return false;
 }
 
 QString MediaPlayer2::identity() const {
