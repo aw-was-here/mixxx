@@ -18,5 +18,5 @@ class MprisService : public ScrobblingService {
     void slotComponentsInitialized();
   private:
     Mpris m_mpris;
-    ControlProxy m_CPAutoDJEnabled;
+    ControlProxy* m_pCPAutoDJEnabled;
 };
