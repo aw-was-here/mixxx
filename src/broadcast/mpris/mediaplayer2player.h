@@ -46,7 +46,7 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
 
     QString playbackStatus() const;
     QString loopStatus() const;
-    void setLoopStatus(const QString &value);
+    void setLoopStatus(const QString& value);
     double rate() const;
     void setRate(double value);
     bool shuffle() const;
