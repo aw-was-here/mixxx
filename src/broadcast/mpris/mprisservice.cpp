@@ -1,16 +1,19 @@
 
 #include "broadcast/mpris/mprisservice.h"
 
+#include "mixxxmainwindow.h"
+
 MprisService::MprisService(MixxxMainWindow *pWindow,
                            PlayerManager *pPlayer,
                            UserSettingsPointer pSettings)
-        : m_mpris(pWindow, pPlayer, pSettings) {
+        : m_mpris(pWindow, pPlayer, pSettings),
+          m_pCPAutoDJEnabled(nullptr) {
     connect(pWindow,&MixxxMainWindow::componentsInitialized,
             this,&MprisService::slotComponentsInitialized);
 }
 
 void MprisService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
-    if (!m_CPAutoDJEnabled.toBool()) {
+    if (m_pCPAutoDJEnabled && !m_pCPAutoDJEnabled->toBool()) {
         m_mpris.broadcastCurrentTrack();
     }
 }
@@ -23,7 +26,7 @@ void MprisService::slotAllTracksPaused() {
 }
 
 void MprisService::slotComponentsInitialized() {
-    m_CPAutoDJEnabled.initialize(ConfigKey("[AutoDJ]","enabled"));
+    m_pCPAutoDJEnabled = new ControlProxy(ConfigKey("[AutoDJ]","enabled"), this);
 }
 
 
