@@ -24,7 +24,7 @@ void MprisService::slotAllTracksPaused() {
 }
 
 void MprisService::slotComponentsInitialized() {
-    m_pCPAutoDJEnabled = new ControlProxy(ConfigKey("[AutoDJ]","enabled"), this);
+    m_pCPAutoDJEnabled = new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
 }
 
 
