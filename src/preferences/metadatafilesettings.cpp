@@ -4,7 +4,10 @@
 #include <QFileDialog>
 #include <QAbstractItemView>
 #include <QMouseEvent>
+#include <QApplication>
+
 #include <algorithm>
+
 
 #include "metadatafilesettings.h"
 
