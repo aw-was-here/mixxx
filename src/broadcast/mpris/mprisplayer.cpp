@@ -262,7 +262,7 @@ qlonglong MprisPlayer::setPosition(const QDBusObjectPath& trackId, qlonglong pos
 }
 
 void MprisPlayer::openUri(const QString& uri) {
-    Q_UNUSED(uri);
+    qDebug() << "openUri" << uri << "not yet implemented";
 }
 
 void MprisPlayer::mixxxComponentsInitialized() {
@@ -326,15 +326,19 @@ void MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCove
 void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
     CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
     if (coverInfo.type == CoverInfoRelative::FILE) {
-        QString path = coverInfo.trackLocation + coverInfo.coverLocation;
+        QFileInfo fileInfo;
+        if (!coverInfo.trackLocation.isEmpty()) {
+            fileInfo = QFileInfo(coverInfo.trackLocation);
+        }
+        QFileInfo coverFile(fileInfo.dir(), coverInfo.coverLocation);
+        QString path = coverFile.absoluteFilePath();
         qDebug() << "Cover art path: " << path;
-        QString urlString = "file://" + path;
-        QUrl fileUrl(urlString,QUrl::StrictMode);
+        QUrl fileUrl = QUrl::fromLocalFile(path);
         if (!fileUrl.isValid()) {
             qDebug() << "Invalid URL: " << fileUrl;
             return;
         }
-        m_currentMetadata.coverartUrl = urlString;
+        m_currentMetadata.coverartUrl = fileUrl.toString();
         broadcastCurrentMetadata();
     } else if (coverInfo.type == CoverInfoRelative::METADATA) {
         CoverArtCache::requestCover(this, coverInfo);
@@ -438,7 +442,6 @@ void MprisPlayer::slotCoverArtFound(const QObject* requestor,
                                     const CoverInfoRelative& info,
                                     QPixmap pixmap,
                                     bool fromCache) {
-    Q_UNUSED(requestor);
     Q_UNUSED(info);
     Q_UNUSED(fromCache);
 
@@ -451,7 +454,8 @@ void MprisPlayer::slotCoverArtFound(const QObject* requestor,
             return;
         }
         m_currentCoverArtFile.close();
-        m_currentMetadata.coverartUrl = m_currentCoverArtFile.fileName();
+        QUrl fileUrl = QUrl::fromLocalFile(m_currentCoverArtFile.fileName());
+        m_currentMetadata.coverartUrl = fileUrl.toString();
         broadcastCurrentMetadata();
     }
 
