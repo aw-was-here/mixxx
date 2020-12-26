@@ -31,7 +31,6 @@ class Sampler;
 class SamplerBank;
 class SoundManager;
 class ControlProxy;
-class MixxxMainWindow;
 
 // For mocking PlayerManager
 class PlayerManagerInterface {
@@ -64,8 +63,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
             EffectsManager* pEffectsManager,
-            EngineMaster* pEngine,
-            MixxxMainWindow* pWindow);
+            EngineMaster* pEngine);
     ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
@@ -280,7 +278,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
-    ScrobblingManager m_scrobblingManager;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;

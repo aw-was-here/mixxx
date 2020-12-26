@@ -4,14 +4,13 @@
 #include <QDBusMessage>
 #include <QDBusConnection>
 
-MediaPlayer2Player::MediaPlayer2Player(PlayerManager *playerManager,
-                                       QObject *parent,
-                                       MixxxMainWindow *pWindow,
-                                       Mpris *pMpris,
-                                       UserSettingsPointer pSettings)
-        :  QDBusAbstractAdaptor(parent),
-           m_mprisPlayer(playerManager, pWindow, pMpris, pSettings)
-{
+MediaPlayer2Player::MediaPlayer2Player(PlayerManagerInterface* playerManager,
+        QObject* parent,
+        MixxxMainWindow* pWindow,
+        Mpris* pMpris,
+        UserSettingsPointer pSettings)
+        : QDBusAbstractAdaptor(parent),
+          m_mprisPlayer(playerManager, pWindow, pMpris, pSettings) {
 }
 
 QString MediaPlayer2Player::playbackStatus() const {

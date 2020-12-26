@@ -27,6 +27,7 @@ class TrackCollectionManager;
 class Library;
 class LV2Backend;
 class MixxxMainWindow;
+class ScrobblingManager;
 
 namespace mixxx {
 
@@ -134,6 +135,7 @@ class CoreServices : public QObject {
     std::shared_ptr<EngineMaster> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
+    std::shared_ptr<ScrobblingManager> m_pScrobblingManager;
     std::shared_ptr<RecordingManager> m_pRecordingManager;
 #ifdef __BROADCAST__
     std::shared_ptr<BroadcastManager> m_pBroadcastManager;
