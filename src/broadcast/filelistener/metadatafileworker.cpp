@@ -2,7 +2,7 @@
 #include "broadcast/filelistener/metadatafileworker.h"
 
 MetadataFileWorker::MetadataFileWorker(const QString& filePath)
-        :  m_file(filePath) {
+        : m_file(filePath) {
 }
 
 void MetadataFileWorker::slotDeleteFile() {
@@ -16,8 +16,8 @@ void MetadataFileWorker::slotMoveFile(QString destination) {
 
 void MetadataFileWorker::slotWriteMetadataToFile(QByteArray fileContents) {
     m_file.open(QIODevice::WriteOnly |
-                QIODevice::Text |
-                QIODevice::Unbuffered);
+            QIODevice::Text |
+            QIODevice::Unbuffered);
     m_file.write(fileContents);
     m_file.close();
 }
@@ -25,5 +25,3 @@ void MetadataFileWorker::slotWriteMetadataToFile(QByteArray fileContents) {
 void MetadataFileWorker::slotClearFile() {
     m_file.resize(0);
 }
-
-

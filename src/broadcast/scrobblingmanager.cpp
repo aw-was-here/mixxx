@@ -16,27 +16,30 @@
 
 #ifdef MIXXX_BUILD_DEBUG
 QDebug operator<<(QDebug debug, const ScrobblingManager::TrackInfo& info) {
-        debug << "Pointer to track:" << info.m_trackInfo.get();
-        return debug << "Players:" << info.m_players;
+    debug << "Pointer to track:" << info.m_trackInfo.get();
+    return debug << "Players:" << info.m_players;
 }
 #endif
 
-TotalVolumeThreshold::TotalVolumeThreshold(QObject *parent, double threshold) 
-        :  m_CPCrossfader("[Master]", "crossfader", parent),
-           m_CPXFaderCurve(ConfigKey(EngineXfader::kXfaderConfigKey, 
-                "xFaderCurve"), parent),
-           m_CPXFaderCalibration(ConfigKey(EngineXfader::kXfaderConfigKey, 
-                      "xFaderCalibration"), parent),
-           m_CPXFaderMode(ConfigKey(EngineXfader::kXfaderConfigKey, 
-               "xFaderMode"), parent),
-           m_CPXFaderReverse(ConfigKey(EngineXfader::kXfaderConfigKey, 
-                  "xFaderReverse"), parent),
-           m_pParent(parent),
-           m_volumeThreshold(threshold) {
-
+TotalVolumeThreshold::TotalVolumeThreshold(QObject* parent, double threshold)
+        : m_CPCrossfader("[Master]", "crossfader", parent),
+          m_CPXFaderCurve(ConfigKey(EngineXfader::kXfaderConfigKey,
+                                  "xFaderCurve"),
+                  parent),
+          m_CPXFaderCalibration(ConfigKey(EngineXfader::kXfaderConfigKey,
+                                        "xFaderCalibration"),
+                  parent),
+          m_CPXFaderMode(ConfigKey(EngineXfader::kXfaderConfigKey,
+                                 "xFaderMode"),
+                  parent),
+          m_CPXFaderReverse(ConfigKey(EngineXfader::kXfaderConfigKey,
+                                    "xFaderReverse"),
+                  parent),
+          m_pParent(parent),
+          m_volumeThreshold(threshold) {
 }
 
-bool TotalVolumeThreshold::isPlayerAudible(BaseTrackPlayer *pPlayer) const {
+bool TotalVolumeThreshold::isPlayerAudible(BaseTrackPlayer* pPlayer) const {
     DEBUG_ASSERT(pPlayer);
     double finalVolume;
     ControlProxy trackPreGain(pPlayer->getGroup(), "pregain", m_pParent);
@@ -44,21 +47,22 @@ bool TotalVolumeThreshold::isPlayerAudible(BaseTrackPlayer *pPlayer) const {
     ControlProxy trackVolume(pPlayer->getGroup(), "volume", m_pParent);
     double volume = trackVolume.get();
     ControlProxy deckOrientation(pPlayer->getGroup(), "orientation", m_pParent);
-    int orientation = static_cast<int>(deckOrientation.get());    
+    int orientation = static_cast<int>(deckOrientation.get());
 
     CSAMPLE_GAIN xFaderLeft;
     CSAMPLE_GAIN xFaderRight;
 
     EngineXfader::getXfadeGains(m_CPCrossfader.get(),
-                                m_CPXFaderCurve.get(),
-                                m_CPXFaderCalibration.get(),
-                                m_CPXFaderMode.get(),
-                                m_CPXFaderReverse.toBool(),
-                                &xFaderLeft, &xFaderRight);
+            m_CPXFaderCurve.get(),
+            m_CPXFaderCalibration.get(),
+            m_CPXFaderMode.get(),
+            m_CPXFaderReverse.toBool(),
+            &xFaderLeft,
+            &xFaderRight);
     finalVolume = preGain * volume;
     if (orientation == EngineChannel::LEFT)
         finalVolume *= xFaderLeft;
-    else if (orientation == EngineChannel::RIGHT) 
+    else if (orientation == EngineChannel::RIGHT)
         finalVolume *= xFaderRight;
     return finalVolume > m_volumeThreshold;
 }
@@ -75,8 +79,10 @@ ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
           m_pTimer(new TrackTimers::GUITickTimer),
           m_scrobbledAtLeastOnce(false),
           m_GuiTickObject(ConfigKey("[Master]", "guiTick50ms")) {
-    connect(m_pTimer.get(), &TrackTimers::RegularTimer::timeout,
-            this, &ScrobblingManager::slotCheckAudibleTracks);
+    connect(m_pTimer.get(),
+            &TrackTimers::RegularTimer::timeout,
+            this,
+            &ScrobblingManager::slotCheckAudibleTracks);
     m_GuiTickObject.connectValueChanged(this, &ScrobblingManager::slotGuiTick);
     m_pTimer->start(1000);
 
@@ -93,27 +99,28 @@ ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
             this,
             &ScrobblingManager::onNumberOfDecksChanged);
 
-    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
-            m_pBroadcaster.get(), SLOT(slotNowListening(TrackPointer)));
+    connect(&PlayerInfo::instance(),
+            SIGNAL(currentPlayingTrackChanged(TrackPointer)),
+            m_pBroadcaster.get(),
+            SLOT(slotNowListening(TrackPointer)));
 }
 
 void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy* pStrategy) {
     m_pAudibleStrategy.reset(pStrategy);
 }
 
-void ScrobblingManager::setTimer(TrackTimers::RegularTimer *timer) {
+void ScrobblingManager::setTimer(TrackTimers::RegularTimer* timer) {
     m_pTimer.reset(timer);
 }
 
 void ScrobblingManager::setTrackInfoFactory(
-    const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory) {
+        const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory) {
     m_trackInfoFactory = factory;
 }
 
 bool ScrobblingManager::hasScrobbledAnyTrack() const {
     return m_scrobbledAtLeastOnce;
 }
-
 
 void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
     if (!pPausedTrack)
@@ -165,7 +172,8 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString
     m_trackInfoHashDict[pNewTrack->getId()].m_players.insert(playerGroup);
     connect(m_trackInfoHashDict[pNewTrack->getId()].m_trackInfo.get(),
             &TrackTimingInfo::readyToBeScrobbled,
-            this, &ScrobblingManager::slotReadyToBeScrobbled);
+            this,
+            &ScrobblingManager::slotReadyToBeScrobbled);
     m_pBroadcaster->newTrackLoaded(pNewTrack);
     auto it = m_trackInfoHashDict.begin();
     while (it != m_trackInfoHashDict.end()) {
@@ -173,32 +181,29 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString
             it->m_players.remove(playerGroup);
             if (it->m_players.empty()) {
                 it = m_trackInfoHashDict.erase(it);
-            }
-            else {
+            } else {
                 ++it;
             }
-        }
-        else {
+        } else {
             ++it;
         }
     }
 }
-
 
 void ScrobblingManager::slotGuiTick(double timeSinceLastTick) {
     for (auto& trackInfo : m_trackInfoHashDict) {
         trackInfo.m_trackInfo->slotGuiTick(timeSinceLastTick);
     }
 
-    MetadataBroadcaster *broadcaster =
-        qobject_cast<MetadataBroadcaster*>(m_pBroadcaster.get());
+    MetadataBroadcaster* broadcaster =
+            qobject_cast<MetadataBroadcaster*>(m_pBroadcaster.get());
     if (broadcaster)
         broadcaster->guiTick(timeSinceLastTick);
 
-    TrackTimers::GUITickTimer *timer = 
-        qobject_cast<TrackTimers::GUITickTimer*>(m_pTimer.get());
+    TrackTimers::GUITickTimer* timer =
+            qobject_cast<TrackTimers::GUITickTimer*>(m_pTimer.get());
     if (timer)
-        timer->slotTick(timeSinceLastTick);    
+        timer->slotTick(timeSinceLastTick);
 }
 
 void ScrobblingManager::slotReadyToBeScrobbled(TrackPointer pTrack) {
@@ -218,8 +223,7 @@ void ScrobblingManager::slotCheckAudibleTracks() {
         }
         if (!audible) {
             trackInfo.m_trackInfo->pausePlayedTime();
-        }
-        else if (trackInfo.m_trackInfo->isTimerPaused()){
+        } else if (trackInfo.m_trackInfo->isTimerPaused()) {
             trackInfo.m_trackInfo->resumePlayedTime();
         }
     }

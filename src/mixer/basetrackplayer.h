@@ -38,7 +38,9 @@ class BaseTrackPlayer : public BasePlayer {
 
     virtual TrackPointer getLoadedTrack() const = 0;
 
-    virtual bool isTrackPaused() const {return false;}
+    virtual bool isTrackPaused() const {
+        return false;
+    }
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;

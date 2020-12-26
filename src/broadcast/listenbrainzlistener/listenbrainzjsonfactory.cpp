@@ -6,14 +6,12 @@
 
 #include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
 
-
 QByteArray ListenBrainzJSONFactory::getJSONFromTrack(TrackPointer pTrack, JsonType type) {
     QJsonObject jsonObject;
     QString stringType;
     if (type == NowListening) {
         stringType = "playing_now";
-    }
-    else {
+    } else {
         stringType = "single";
     }
 

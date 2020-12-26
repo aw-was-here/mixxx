@@ -1,12 +1,12 @@
 #pragma once
 
+#include <QElapsedTimer>
 #include <QList>
+#include <QMetaObject>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QObject>
 #include <QUrl>
-#include <QElapsedTimer>
-#include <QMetaObject>
 
 #include "audio/streaminfo.h"
 #include "sources/metadatasource.h"
@@ -15,8 +15,8 @@
 #include "track/cueinfoimporter.h"
 #include "track/track_decl.h"
 #include "track/trackfile.h"
-#include "track/trackrecord.h"
 #include "track/trackplaytimers.h"
+#include "track/trackrecord.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
@@ -129,7 +129,7 @@ class Track : public QObject {
     QString getDurationTextMilliseconds() const {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
-    
+
     // Set BPM
     double setBpm(double);
     // Returns BPM

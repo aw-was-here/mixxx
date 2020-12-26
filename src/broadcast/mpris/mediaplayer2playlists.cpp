@@ -2,8 +2,8 @@
 
 #include "mediaplayer2playlists.h"
 
-MediaPlayer2Playlists::MediaPlayer2Playlists(QObject *parent)
-    : QDBusAbstractAdaptor(parent) {
+MediaPlayer2Playlists::MediaPlayer2Playlists(QObject* parent)
+        : QDBusAbstractAdaptor(parent) {
 }
 
 MediaPlayer2Playlists::~MediaPlayer2Playlists() {
@@ -29,9 +29,9 @@ void MediaPlayer2Playlists::ActivatePlaylist(const QDBusObjectPath& playlistId) 
 }
 
 QList<Playlist> MediaPlayer2Playlists::GetPlaylists(uint index,
-                                                    uint maxCount,
-                                                    const QString& order,
-                                                    bool reverseOrder) {
+        uint maxCount,
+        const QString& order,
+        bool reverseOrder) {
     Q_UNUSED(index);
     Q_UNUSED(maxCount);
     Q_UNUSED(order);

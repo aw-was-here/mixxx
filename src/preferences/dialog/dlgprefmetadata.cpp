@@ -1,7 +1,7 @@
 
 #include "preferences/dialog/dlgprefmetadata.h"
 
-DlgPrefMetadata::DlgPrefMetadata(QWidget *pParent,UserSettingsPointer pSettings)
+DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSettings(pSettings),
           m_pFileSettings(nullptr),
@@ -19,14 +19,14 @@ void DlgPrefMetadata::setFileSettings() {
     widgets.filePathLineEdit = filePathLineEdit;
     widgets.changeFilePathButton = filePathButton;
 
-    m_pFileSettings = new MetadataFileSettings(m_pSettings,widgets,this);
+    m_pFileSettings = new MetadataFileSettings(m_pSettings, widgets, this);
 }
 
 void DlgPrefMetadata::setListenBrainzSettings() {
     ListenBrainzWidgets widgets;
     widgets.m_pEnabled = enableListenbrainzBox;
     widgets.m_pUserToken = listenBrainzUserTokenLineEdit;
-    m_pListenBrainzSettings = new ListenBrainzSettingsManager(m_pSettings,widgets);
+    m_pListenBrainzSettings = new ListenBrainzSettingsManager(m_pSettings, widgets);
 }
 
 void DlgPrefMetadata::slotApply() {
@@ -51,4 +51,3 @@ DlgPrefMetadata::~DlgPrefMetadata() {
 
 void DlgPrefMetadata::slotUpdate() {
 }
-

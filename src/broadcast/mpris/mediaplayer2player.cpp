@@ -1,7 +1,7 @@
-#include <QApplication>
-#include <QDBusMessage>
-#include <QDBusConnection>
 #include <mixxx.h>
+#include <QApplication>
+#include <QDBusConnection>
+#include <QDBusMessage>
 
 #include "broadcast/mpris/mediaplayer2player.h"
 
@@ -95,7 +95,6 @@ void MediaPlayer2Player::Next() {
 }
 
 void MediaPlayer2Player::Previous() {
-
 }
 
 void MediaPlayer2Player::Pause() {
@@ -119,7 +118,7 @@ void MediaPlayer2Player::Seek(qlonglong offset) {
 }
 
 void MediaPlayer2Player::SetPosition(const QDBusObjectPath& trackId,
-                                     qlonglong position) {
+        qlonglong position) {
     bool success;
     m_mprisPlayer.setPosition(trackId, position, success);
 }

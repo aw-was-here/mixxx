@@ -5,17 +5,16 @@
 #include "mixer/playerinfo.h"
 
 MetadataBroadcaster::MetadataBroadcaster()
-        :  m_gracePeriodSeconds(5*60) {
-
+        : m_gracePeriodSeconds(5 * 60) {
 }
 
 void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
     if (m_trackedTracks.contains(pTrack->getId())) {
         GracePeriod trackPeriod = m_trackedTracks.value(pTrack->getId());
         if ((trackPeriod.m_hasBeenEjected &&
-            trackPeriod.m_msSinceEjection >
-            m_gracePeriodSeconds*1000.0) ||
-            trackPeriod.m_firstTimeLoaded) {
+                    trackPeriod.m_msSinceEjection >
+                            m_gracePeriodSeconds * 1000.0) ||
+                trackPeriod.m_firstTimeLoaded) {
             for (auto& service : m_scrobblingServices) {
                 service->slotScrobbleTrack(pTrack);
             }
@@ -38,10 +37,10 @@ void MetadataBroadcaster::slotAllTracksPaused() {
     }
 }
 
-MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService
-    (const ScrobblingServicePtr& newService) {
+MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(
+        const ScrobblingServicePtr& newService) {
     m_scrobblingServices.push_back(newService);
-    return *this;    
+    return *this;
 }
 
 void MetadataBroadcaster::newTrackLoaded(TrackPointer pTrack) {
@@ -69,5 +68,3 @@ void MetadataBroadcaster::guiTick(double timeSinceLastTick) {
         }
     }
 }
-
-

@@ -1,8 +1,7 @@
 #pragma once
 
-
-#include "broadcast/scrobblingservice.h"
 #include "broadcast/mpris/mpris.h"
+#include "broadcast/scrobblingservice.h"
 #include "mixxx.h"
 
 class PlayerManagerInterface;
@@ -16,6 +15,7 @@ class MprisService : public ScrobblingService {
     void slotBroadcastCurrentTrack(TrackPointer pTrack) override;
     void slotScrobbleTrack(TrackPointer pTrack) override;
     void slotAllTracksPaused() override;
+
   private:
     Mpris m_mpris;
     ControlProxy* m_pCPAutoDJEnabled;

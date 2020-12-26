@@ -1,25 +1,23 @@
 #ifndef MEDIAPLAYER2PLAYER_H
 #define MEDIAPLAYER2PLAYER_H
 
+#include <mixxx.h>
+#include <QStringList>
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QtDBus/QDBusObjectPath>
-#include <QStringList>
-#include <mixxx.h>
 
 #include "broadcast/mpris/mprisplayer.h"
 #include "control/controlproxy.h"
 
-
 class AutoDJProcessor;
 class PlayerManager;
 
-// this implements the Version 2.2 of 
+// this implements the Version 2.2 of
 // MPRIS D-Bus Interface Specification
 // org.mpris.MediaPlayer2.Player
 // http://specifications.freedesktop.org/mpris-spec/2.2/
 
-class MediaPlayer2Player : public QDBusAbstractAdaptor
-{
+class MediaPlayer2Player : public QDBusAbstractAdaptor {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2.Player")
     Q_PROPERTY(QString PlaybackStatus READ playbackStatus)

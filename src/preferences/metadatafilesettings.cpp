@@ -1,35 +1,33 @@
-#include <QTextCodec>
-#include <QObject>
-#include <QLineEdit>
-#include <QFileDialog>
 #include <QAbstractItemView>
-#include <QMouseEvent>
 #include <QApplication>
+#include <QFileDialog>
+#include <QLineEdit>
+#include <QMouseEvent>
+#include <QObject>
+#include <QTextCodec>
 
 #include <algorithm>
 
-
 #include "metadatafilesettings.h"
-
 
 FileSettings MetadataFileSettings::s_latestSettings;
 
 MetadataFileSettings::MetadataFileSettings(UserSettingsPointer pSettings,
-                                           const FileWidgets& widgets,
-                                           QWidget *dialogWidget)
-        :  m_pSettings(pSettings),
-           m_CPSettingsChanged(kFileSettingsChanged),
-           m_widgets(widgets),
-           m_pDialogWidget(dialogWidget),
-           m_fileEncodings{
-                   "UTF-8",
-                   "latin1",
-                   "Windows-1251",
-                   "Windows-1252",
-                   "Shift-JIS",
-                   "GB18030",
-                   "EUC-KR",
-                   "EUC-JP"} {
+        const FileWidgets& widgets,
+        QWidget* dialogWidget)
+        : m_pSettings(pSettings),
+          m_CPSettingsChanged(kFileSettingsChanged),
+          m_widgets(widgets),
+          m_pDialogWidget(dialogWidget),
+          m_fileEncodings{
+                  "UTF-8",
+                  "latin1",
+                  "Windows-1251",
+                  "Windows-1252",
+                  "Shift-JIS",
+                  "GB18030",
+                  "EUC-KR",
+                  "EUC-JP"} {
     s_latestSettings = getPersistedSettings(pSettings);
     setupWidgets();
 }
@@ -37,13 +35,13 @@ MetadataFileSettings::MetadataFileSettings(UserSettingsPointer pSettings,
 FileSettings MetadataFileSettings::getPersistedSettings(const UserSettingsPointer& pSettings) {
     FileSettings ret;
     ret.enabled =
-            pSettings->getValue(kMetadataFileEnabled,defaultFileMetadataEnabled);
+            pSettings->getValue(kMetadataFileEnabled, defaultFileMetadataEnabled);
     ret.fileEncoding =
-            pSettings->getValue(kFileEncoding,defaultEncoding.constData()).toUtf8();
+            pSettings->getValue(kFileEncoding, defaultEncoding.constData()).toUtf8();
     ret.fileFormatString =
-            pSettings->getValue(kFileFormatString,defaultFileFormatString);
+            pSettings->getValue(kFileFormatString, defaultFileFormatString);
     ret.filePath =
-            pSettings->getValue(kFilePath,defaultFilePath);
+            pSettings->getValue(kFilePath, defaultFilePath);
     return ret;
 }
 
@@ -56,9 +54,10 @@ void MetadataFileSettings::setupWidgets() {
 
     m_widgets.filePathLineEdit->setText(s_latestSettings.filePath);
     m_widgets.filePathLineEdit->setStyleSheet("");
-    QObject::connect(m_widgets.changeFilePathButton,SIGNAL(pressed()),
-                     this,SLOT(slotFilepathButtonClicked()));
-
+    QObject::connect(m_widgets.changeFilePathButton,
+            SIGNAL(pressed()),
+            this,
+            SLOT(slotFilepathButtonClicked()));
 }
 
 FileSettings MetadataFileSettings::getLatestSettings() {
@@ -72,10 +71,8 @@ void MetadataFileSettings::applySettings() {
     }
 }
 
-
-
 bool MetadataFileSettings::fileSettingsDifferent() {
-    return  s_latestSettings.enabled !=
+    return s_latestSettings.enabled !=
             m_widgets.enableCheckbox->isChecked() ||
 
             s_latestSettings.fileEncoding !=
@@ -96,8 +93,7 @@ bool MetadataFileSettings::checkIfSettingsCorrect() {
         bool dirExists = dir.exists();
         if (!dirExists) {
             m_widgets.filePathLineEdit->setStyleSheet("border: 1px solid red");
-        }
-        else {
+        } else {
             m_widgets.filePathLineEdit->setStyleSheet("");
         }
         return dirExists;
@@ -116,10 +112,10 @@ void MetadataFileSettings::updateLatestSettingsAndNotify() {
 }
 
 void MetadataFileSettings::persistSettings() {
-    m_pSettings->setValue(kMetadataFileEnabled,s_latestSettings.enabled);
-    m_pSettings->setValue(kFileEncoding,QString(s_latestSettings.fileEncoding));
-    m_pSettings->setValue(kFileFormatString,s_latestSettings.fileFormatString);
-    m_pSettings->setValue(kFilePath,s_latestSettings.filePath);
+    m_pSettings->setValue(kMetadataFileEnabled, s_latestSettings.enabled);
+    m_pSettings->setValue(kFileEncoding, QString(s_latestSettings.fileEncoding));
+    m_pSettings->setValue(kFileFormatString, s_latestSettings.fileFormatString);
+    m_pSettings->setValue(kFilePath, s_latestSettings.filePath);
 }
 
 void MetadataFileSettings::setSettingsToDefault() {
@@ -138,15 +134,10 @@ void MetadataFileSettings::slotFilepathButtonClicked() {
     QString newFilePath = QFileDialog::getSaveFileName(
             m_pDialogWidget,
             "Choose new file path",
-            checkIfSettingsCorrect() ?
-            m_widgets.filePathLineEdit->text() :
-            defaultFilePath,
-            "Text files(*.txt)"
-    );
+            checkIfSettingsCorrect() ? m_widgets.filePathLineEdit->text() : defaultFilePath,
+            "Text files(*.txt)");
     m_widgets.filePathLineEdit->setText(newFilePath);
 }
-
-
 
 void MetadataFileSettings::cancelSettings() {
     setupWidgets();

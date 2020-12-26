@@ -1,16 +1,16 @@
 #include "track/trackplaytimers.h"
 
 TrackTimers::GUITickTimer::GUITickTimer()
-	: m_msSoFar(0.0),
-      m_msTarget(0.0),
-      m_isActive(false),
-      m_timeoutSent(false) {
+        : m_msSoFar(0.0),
+          m_msTarget(0.0),
+          m_isActive(false),
+          m_timeoutSent(false) {
 }
 
 void TrackTimers::GUITickTimer::start(double msec) {
     m_msTarget = msec;
     m_msSoFar = 0.0;
-    m_isActive = true;    
+    m_isActive = true;
     m_timeoutSent = false;
 }
 
@@ -19,7 +19,7 @@ bool TrackTimers::GUITickTimer::isActive() const {
 }
 
 void TrackTimers::GUITickTimer::stop() {
-    m_isActive = false;    
+    m_isActive = false;
 }
 
 void TrackTimers::GUITickTimer::slotTick(double timeSinceLastTick) {
