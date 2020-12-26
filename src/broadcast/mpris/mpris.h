@@ -1,16 +1,15 @@
-#ifndef MPRIS_H
-#define MPRIS_H
+#pragma once
 
-#include <QObject>
 #include <QDBusConnection>
+#include <QObject>
+
 #include "track/track.h"
 
 class MediaPlayer2Player;
 class MixxxMainWindow;
 class PlayerManagerInterface;
 
-class Mpris : public QObject
-{
+class Mpris : public QObject {
     Q_OBJECT
   public:
     explicit Mpris(MixxxMainWindow* mixxx,
@@ -19,12 +18,10 @@ class Mpris : public QObject
     ~Mpris();
     void broadcastCurrentTrack();
     void notifyPropertyChanged(const QString& interface,
-                               const QString& propertyName,
-                               const QVariant& propertyValue);
+            const QString& propertyName,
+            const QVariant& propertyValue);
+
   private:
-
     QDBusConnection m_busConnection;
-    MediaPlayer2Player *m_pPlayer;
+    MediaPlayer2Player* m_pPlayer;
 };
-
-#endif // MPRIS_H

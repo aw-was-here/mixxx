@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QObject>
 #include <QFile>
+#include <QObject>
 
 class MetadataFileWorker : public QObject {
     Q_OBJECT
@@ -12,7 +12,7 @@ class MetadataFileWorker : public QObject {
     void slotMoveFile(QString destination);
     void slotWriteMetadataToFile(QByteArray fileContents);
     void slotClearFile();
+
   private:
     QFile m_file;
 };
-

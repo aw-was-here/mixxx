@@ -10,17 +10,10 @@
 #include <QTabBar>
 #include <QTabWidget>
 
-#include <QResizeEvent>
-#include <QScreen>
-
-#include "preferences/dialog/dlgpreferences.h"
-
-#include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgpreflibrary.h"
-#include "preferences/dialog/dlgprefmetadata.h"
 #include "controllers/dlgprefcontrollers.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefmetadata.h"
 #include "preferences/dialog/dlgprefsound.h"
 
 #ifdef __VINYLCONTROL__
@@ -213,7 +206,7 @@ DlgPreferences::DlgPreferences(
 
     addPageWidget(PreferencesPage(
                           new DlgPrefMetadata(this, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)), 
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Metadata Broadcast"),
             "ic_preferences_broadcast.svg");
 

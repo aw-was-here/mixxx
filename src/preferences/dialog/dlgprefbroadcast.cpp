@@ -1,11 +1,11 @@
-#include <QtDebug>
+#include <QAbstractItemDelegate>
+#include <QFileDialog>
+#include <QHeaderView>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QMetaMethod>
 #include <QMetaProperty>
-#include <QAbstractItemDelegate>
-#include <QMessageBox>
-#include <QHeaderView>
-#include <QFileDialog>
+#include <QtDebug>
 
 // shout.h checks for WIN32 to see if we are on Windows
 #ifdef WIN64
@@ -19,15 +19,14 @@
 
 #include "broadcast/defs_broadcast.h"
 #include "broadcast/filelistener/filelistener.h"
-#include "recording/defs_recording.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "encoder/encodersettings.h"
 #include "moc_dlgprefbroadcast.cpp"
+#include "preferences/configobject.h"
 #include "preferences/dialog/dlgprefbroadcast.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
-#include "preferences/configobject.h"
 
 namespace {
 const char* kSettingsGroupHeader = "Settings for %1";
@@ -639,4 +638,3 @@ void DlgPrefBroadcast::onSectionResized() {
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);
 }
-

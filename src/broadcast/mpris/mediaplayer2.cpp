@@ -1,14 +1,15 @@
-#include <QApplication>
-#include <QWidget>
-#include <QDebug>
+#include "broadcast/mpris/mediaplayer2.h"
 
-#include "mediaplayer2.h"
+#include <QApplication>
+#include <QDebug>
+#include <QWidget>
+
 #include "mixxxmainwindow.h"
 #include "sources/soundsourceproxy.h"
 
 MediaPlayer2::MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent)
-    : QDBusAbstractAdaptor(parent),
-      m_pMixxx(pMixxx) {
+        : QDBusAbstractAdaptor(parent),
+          m_pMixxx(pMixxx) {
 }
 
 bool MediaPlayer2::canQuit() const {
@@ -59,7 +60,8 @@ QStringList MediaPlayer2::supportedUriSchemes() const {
 
 QStringList MediaPlayer2::supportedMimeTypes() const {
     QStringList ret;
-    ret << "audio/mpeg" << "audio/ogg";
+    ret << "audio/mpeg"
+        << "audio/ogg";
     return ret;
 }
 
@@ -74,5 +76,3 @@ void MediaPlayer2::Raise() {
 void MediaPlayer2::Quit() {
     QApplication::quit();
 }
-
-

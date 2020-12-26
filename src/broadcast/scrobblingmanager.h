@@ -2,18 +2,18 @@
 
 #pragma once
 
-#include <QObject>
-#include <QLinkedList>
 #include <QHash>
+#include <QLinkedList>
+#include <QObject>
 #include <QSet>
-#include <functional>
 #include <QString>
+#include <functional>
 
-#include "control/controlobject.h"
 #include "broadcast/metadatabroadcast.h"
+#include "control/controlobject.h"
 #include "track/track.h"
-#include "track/tracktiminginfo.h"
 #include "track/trackplaytimers.h"
+#include "track/tracktiminginfo.h"
 
 class BaseTrackPlayer;
 class PlayerManager;
@@ -23,14 +23,15 @@ class MixxxMainWindow;
 class TrackAudibleStrategy {
   public:
     virtual ~TrackAudibleStrategy() = default;
-    virtual bool isPlayerAudible(BaseTrackPlayer *pPlayer) const = 0;
+    virtual bool isPlayerAudible(BaseTrackPlayer* pPlayer) const = 0;
 };
 
 class TotalVolumeThreshold : public TrackAudibleStrategy {
   public:
-    TotalVolumeThreshold(QObject *parent, double threshold);
-    bool isPlayerAudible(BaseTrackPlayer *pPlayer) const override;
+    TotalVolumeThreshold(QObject* parent, double threshold);
+    bool isPlayerAudible(BaseTrackPlayer* pPlayer) const override;
     void setVolumeThreshold(double volume);
+
   private:
     ControlProxy m_CPCrossfader;
     ControlProxy m_CPXFaderCurve;
@@ -38,7 +39,7 @@ class TotalVolumeThreshold : public TrackAudibleStrategy {
     ControlProxy m_CPXFaderMode;
     ControlProxy m_CPXFaderReverse;
 
-    QObject *m_pParent;
+    QObject* m_pParent;
 
     double m_volumeThreshold;
 };
@@ -52,9 +53,11 @@ class ScrobblingManager : public QObject {
             std::shared_ptr<PlayerManager> pPlayerManager,
             MixxxMainWindow* pWindow);
     ~ScrobblingManager() = default;
-    void setAudibleStrategy(TrackAudibleStrategy *pStrategy);
-    void setTimer(TrackTimers::RegularTimer *timer);
-    void setTrackInfoFactory(const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory);
+    void setAudibleStrategy(TrackAudibleStrategy* pStrategy);
+    void setTimer(TrackTimers::RegularTimer* timer);
+    void setTrackInfoFactory(
+            const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>&
+                    factory);
     bool hasScrobbledAnyTrack() const;
 
   public slots:
@@ -64,16 +67,14 @@ class ScrobblingManager : public QObject {
     void onNumberOfDecksChanged(int i);
 
   private:
-
     struct TrackInfo {
         std::shared_ptr<TrackTimingInfo> m_trackInfo;
-        QSet <QString> m_players;
-        void init (const TrackTimingFactory& factory,
-                   const TrackPointer& pTrack) {
+        QSet<QString> m_players;
+        void init(const TrackTimingFactory& factory,
+                const TrackPointer& pTrack) {
             if (factory) {
                 m_trackInfo = factory(pTrack);
-            }
-            else {
+            } else {
                 m_trackInfo = std::make_shared<TrackTimingInfo>(pTrack);
             }
         }

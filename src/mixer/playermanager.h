@@ -7,6 +7,7 @@
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
+#include "broadcast/scrobblingmanager.h"
 #include "engine/channelhandle.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
@@ -15,7 +16,6 @@
 #include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
-#include "broadcast/scrobblingmanager.h"
 
 class Auxiliary;
 class BaseTrackPlayer;

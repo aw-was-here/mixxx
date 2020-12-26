@@ -1797,7 +1797,7 @@ void Track::pausePlayedTime() {
         killTimer(m_timerId);
         m_msPlayed += m_playedSincePause.elapsed();
         m_playedSincePause.invalidate();
-    }        
+    }
 }
 
 void Track::resumePlayedTime() {
@@ -1814,8 +1814,8 @@ void Track::resetPlayedTime() {
     killTimer(m_timerId);
 }
 
-void Track::timerEvent(QTimerEvent *timerEvent) {
-    if(timerEvent->timerId() == m_timerId) {
+void Track::timerEvent(QTimerEvent* timerEvent) {
+    if (timerEvent->timerId() == m_timerId) {
         qint64 msInTimer = 0;
         if (m_playedSincePause.isValid()) {
             msInTimer = m_playedSincePause.elapsed();

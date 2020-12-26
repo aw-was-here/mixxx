@@ -1,11 +1,10 @@
+#include "broadcast/filelistener/filelistener.h"
 
 #include <QTextCodec>
 #include <QtConcurrentRun>
 
-#include "broadcast/filelistener/filelistener.h"
 #include "broadcast/filelistener/metadatafileworker.h"
 #include "preferences/metadatafilesettings.h"
-
 
 FileListener::FileListener(UserSettingsPointer pConfig)
         : m_COsettingsChanged(kFileSettingsChanged),
@@ -13,27 +12,26 @@ FileListener::FileListener(UserSettingsPointer pConfig)
           m_latestSettings(MetadataFileSettings::getPersistedSettings(pConfig)),
           m_filePathChanged(false),
           m_tracksPaused(false) {
-
-    MetadataFileWorker *newWorker = new MetadataFileWorker(m_latestSettings.filePath);
+    MetadataFileWorker* newWorker = new MetadataFileWorker(m_latestSettings.filePath);
     newWorker->moveToThread(&m_workerThread);
 
-    connect(&m_workerThread, SIGNAL(finished()),
-            newWorker, SLOT(deleteLater()));
+    connect(&m_workerThread, SIGNAL(finished()), newWorker, SLOT(deleteLater()));
 
-    connect(this, SIGNAL(deleteFile()),
-            newWorker, SLOT(slotDeleteFile()));
+    connect(this, SIGNAL(deleteFile()), newWorker, SLOT(slotDeleteFile()));
 
-    connect(this, SIGNAL(moveFile(QString)),
-            newWorker, SLOT(slotMoveFile(QString)));
+    connect(this, SIGNAL(moveFile(QString)), newWorker, SLOT(slotMoveFile(QString)));
 
-    connect(this, SIGNAL(writeMetadataToFile(QByteArray)),
-            newWorker, SLOT(slotWriteMetadataToFile(QByteArray)));
+    connect(this,
+            SIGNAL(writeMetadataToFile(QByteArray)),
+            newWorker,
+            SLOT(slotWriteMetadataToFile(QByteArray)));
 
-    connect(this, SIGNAL(clearFile()),
-            newWorker, SLOT(slotClearFile()));
+    connect(this, SIGNAL(clearFile()), newWorker, SLOT(slotClearFile()));
 
-    connect(&m_COsettingsChanged, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileSettingsChanged(double)));
+    connect(&m_COsettingsChanged,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(slotFileSettingsChanged(double)));
 
     m_workerThread.start();
 }
@@ -44,21 +42,19 @@ FileListener::~FileListener() {
     m_workerThread.wait();
 }
 
-
 void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     if (!m_latestSettings.enabled) {
         return;
     }
     if (!pTrack) {
         emit clearFile();
-    }
-    else {
+    } else {
         m_fileContents.title = pTrack->getTitle();
         m_fileContents.artist = pTrack->getArtist();
         QString writtenString(m_latestSettings.fileFormatString);
-        writtenString.replace("$author", pTrack->getArtist()).
-                replace("$title", pTrack->getTitle()) += '\n';
-        QTextCodec *codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
+        writtenString.replace("$author", pTrack->getArtist())
+                .replace("$title", pTrack->getTitle()) += '\n';
+        QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
         DEBUG_ASSERT(codec);
         QByteArray fileContents = codec->fromUnicode(writtenString);
         m_tracksPaused = false;
@@ -90,8 +86,7 @@ void FileListener::slotFileSettingsChanged(double value) {
 void FileListener::updateStateFromSettings() {
     if (m_latestSettings.enabled) {
         updateFile();
-    }
-    else  {
+    } else {
         emit deleteFile();
     }
 }
@@ -102,16 +97,15 @@ void FileListener::updateFile() {
         m_filePathChanged = false;
     }
     if (!m_tracksPaused && !m_fileContents.isEmpty()) {
-        QTextCodec *codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
+        QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
         if (!codec) {
             qWarning() << "Text codec selected from metadata broadcast settings doesn't exist";
             codec = QTextCodec::codecForName("UTF-8");
         }
         QString newContents(m_latestSettings.fileFormatString);
         newContents.replace("$author", m_fileContents.artist)
-                   .replace("$title", m_fileContents.title) += '\n';
+                .replace("$title", m_fileContents.title) += '\n';
         QByteArray contentsBinary = codec->fromUnicode(newContents);
         emit writeMetadataToFile(contentsBinary);
     }
 }
-

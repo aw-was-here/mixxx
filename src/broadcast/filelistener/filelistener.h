@@ -2,11 +2,12 @@
 
 #include <QFile>
 #include <QThread>
-#include "preferences/dialog/dlgprefmetadata.h"
-#include "control/controlpushbutton.h"
-#include "broadcast/scrobblingservice.h"
 
-class FileListener: public ScrobblingService {
+#include "broadcast/scrobblingservice.h"
+#include "control/controlpushbutton.h"
+#include "preferences/dialog/dlgprefmetadata.h"
+
+class FileListener : public ScrobblingService {
     Q_OBJECT
   public:
     explicit FileListener(UserSettingsPointer pSettings);
@@ -21,8 +22,8 @@ class FileListener: public ScrobblingService {
     void clearFile();
   private slots:
     void slotFileSettingsChanged(double value);
-  private:
 
+  private:
     struct WrittenMetadata {
         QString title, artist;
         bool isEmpty() {

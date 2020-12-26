@@ -1,19 +1,17 @@
 
+#include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
+
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-
-#include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
-
 
 QByteArray ListenBrainzJSONFactory::getJSONFromTrack(TrackPointer pTrack, JsonType type) {
     QJsonObject jsonObject;
     QString stringType;
     if (type == NowListening) {
         stringType = "playing_now";
-    }
-    else {
+    } else {
         stringType = "single";
     }
 

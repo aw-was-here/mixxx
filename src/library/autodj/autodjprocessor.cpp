@@ -154,8 +154,7 @@ AutoDJProcessor::AutoDJProcessor(
             this, &AutoDJProcessor::controlEnable);
 
     m_pIdleState = new ControlPushButton(
-                ConfigKey("[AutoDJ]","idle"));
-
+            ConfigKey("[AutoDJ]", "idle"));
 
     // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
     // are created.

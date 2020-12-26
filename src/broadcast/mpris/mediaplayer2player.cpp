@@ -1,8 +1,8 @@
 #include "broadcast/mpris/mediaplayer2player.h"
 
 #include <QApplication>
-#include <QDBusMessage>
 #include <QDBusConnection>
+#include <QDBusMessage>
 
 MediaPlayer2Player::MediaPlayer2Player(PlayerManagerInterface* playerManager,
         QObject* parent,
@@ -94,7 +94,6 @@ void MediaPlayer2Player::Next() {
 }
 
 void MediaPlayer2Player::Previous() {
-
 }
 
 void MediaPlayer2Player::Pause() {
@@ -118,7 +117,7 @@ void MediaPlayer2Player::Seek(qlonglong offset) {
 }
 
 void MediaPlayer2Player::SetPosition(const QDBusObjectPath& trackId,
-                                     qlonglong position) {
+        qlonglong position) {
     bool success;
     m_mprisPlayer.setPosition(trackId, position, success);
 }

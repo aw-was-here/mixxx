@@ -6,6 +6,7 @@
 #include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
 #include "library/autodj/autodjprocessor.h"
+#include "mixxxmainwindow.h"
 
 class PlayerManager;
 class MixxxMainWindow;
@@ -44,16 +45,15 @@ class MprisPlayer : public QObject {
 
   private slots:
     void slotChangeProperties(double enabled);
-    void slotPlayChanged(DeckAttributes *pDeck, bool playing);
-    void slotPlayPositionChanged(DeckAttributes *pDeck, double position);
+    void slotPlayChanged(DeckAttributes* pDeck, bool playing);
+    void slotPlayPositionChanged(DeckAttributes* pDeck, double position);
     void slotVolumeChanged(double volume);
-    void slotCoverArtFound(const QObject *requestor,
-                           const CoverInfoRelative& info,
-                           QPixmap pixmap,
-                           bool fromCache);
+    void slotCoverArtFound(const QObject* requestor,
+            const CoverInfoRelative& info,
+            QPixmap pixmap,
+            bool fromCache);
 
   private:
-
     void broadcastPropertiesChange(bool enabled);
     void requestMetadataFromTrack(TrackPointer pTrack, bool requestCover);
     void requestCoverartUrl(TrackPointer pTrack);
@@ -67,18 +67,17 @@ class MprisPlayer : public QObject {
             "CanGoNext",
             "CanPlay",
             "CanPause",
-            "CanSeek"
-    };
+            "CanSeek"};
 
     ControlProxy* m_pCPAutoDjEnabled;
     ControlProxy* m_pCPFadeNow;
     ControlProxy* m_pCPAutoDJIdle;
     QList<ControlProxy*> m_CPDeckVolumes;
     PlayerManagerInterface* m_pPlayerManager;
-    MixxxMainWindow *m_pWindow;
+    MixxxMainWindow* m_pWindow;
     QString m_pausedDeck;
     bool m_bPropertiesEnabled;
-    Mpris *m_pMpris;
+    Mpris* m_pMpris;
     QList<DeckAttributes*> m_deckAttributes;
     UserSettingsPointer m_pSettings;
 

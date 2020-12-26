@@ -1,10 +1,10 @@
 #pragma once
 
+#include <QElapsedTimer>
 #include <QList>
+#include <QMetaObject>
 #include <QObject>
 #include <QUrl>
-#include <QElapsedTimer>
-#include <QMetaObject>
 
 #include "audio/streaminfo.h"
 #include "sources/metadatasource.h"
@@ -147,11 +147,12 @@ class Track : public QObject {
     void resumePlayedTime();
 
     void resetPlayedTime();
-    
+
     // Sets the BPM if not locked.
     bool trySetBpm(double bpmValue) {
         return trySetBpm(mixxx::Bpm(bpmValue));
     }
+
     bool trySetBpm(mixxx::Bpm bpm);
 
     // Returns BPM
@@ -477,7 +478,7 @@ class Track : public QObject {
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
     void clean(TrackId trackId);
-    void readyToBeScrobbled(Track *pTrack);
+    void readyToBeScrobbled(Track* pTrack);
 
   private slots:
     void slotCueUpdated();
@@ -622,7 +623,7 @@ class Track : public QObject {
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
-  
+
   protected:
-    void timerEvent(QTimerEvent *timerEvent) override;
+    void timerEvent(QTimerEvent* timerEvent) override;
 };

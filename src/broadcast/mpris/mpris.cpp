@@ -1,17 +1,15 @@
+#include "broadcast/mpris/mpris.h"
 
 #include <QtDBus/QtDBus>
-#include <track/track.h>
 
 #include "broadcast/mpris/mediaplayer2.h"
 #include "broadcast/mpris/mediaplayer2player.h"
-#include "broadcast/mpris/mediaplayer2tracklist.h"
 #include "broadcast/mpris/mediaplayer2playlists.h"
-
-#include "mpris.h"
-
+#include "broadcast/mpris/mediaplayer2tracklist.h"
+#include "track/track.h"
 
 namespace {
-    const QString busName = "org.mpris.MediaPlayer2.mixxx";
+const QString busName = "org.mpris.MediaPlayer2.mixxx";
 }
 
 Mpris::Mpris(MixxxMainWindow* pMixxx,
@@ -41,12 +39,13 @@ Mpris::~Mpris() {
 
 void Mpris::broadcastCurrentTrack() {
     notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
-                                              "Metadata", m_pPlayer->metadata());
+            "Metadata",
+            m_pPlayer->metadata());
 }
 
 void Mpris::notifyPropertyChanged(const QString& interface,
-                                  const QString& propertyName,
-                                  const QVariant& propertyValue) {
+        const QString& propertyName,
+        const QVariant& propertyValue) {
     QDBusMessage signal = QDBusMessage::createSignal(
             "/org/mpris/MediaPlayer2",
             "org.freedesktop.DBus.Properties",
