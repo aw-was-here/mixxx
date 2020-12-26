@@ -25,24 +25,15 @@ namespace {
     const QString playerInterfaceName = "org.mpris.MediaPlayer2.Player";
 }
 
-#define AUTODJENABLED m_bComponentsInitialized && m_pCPAutoDjEnabled->toBool()
-#define AUTODJIDLE AUTODJENABLED && m_pCPAutoDJIdle->toBool()
-
-MprisPlayer::MprisPlayer(PlayerManager *pPlayerManager,
-                         MixxxMainWindow *pWindow,
-                         Mpris *pMpris,
-                         UserSettingsPointer pSettings)
-        :  m_pCPAutoDjEnabled(nullptr),
-           m_pCPFadeNow(nullptr),
-           m_pCPAutoDJIdle(nullptr),
-           m_pPlayerManager(pPlayerManager),
-           m_pWindow(pWindow),
-           m_bComponentsInitialized(false),
-           m_bPropertiesEnabled(false),
-           m_pMpris(pMpris),
-           m_pSettings(pSettings) {
-    connect(m_pWindow, &MixxxMainWindow::componentsInitialized, this,
-            &MprisPlayer::mixxxComponentsInitialized);
+MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
+        MixxxMainWindow* pWindow,
+        Mpris* pMpris,
+        UserSettingsPointer pSettings)
+        : m_pPlayerManager(pPlayerManager),
+          m_pWindow(pWindow),
+          m_bPropertiesEnabled(false),
+          m_pMpris(pMpris),
+          m_pSettings(pSettings) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -50,10 +41,33 @@ MprisPlayer::MprisPlayer(PlayerManager *pPlayerManager,
                 this,
                 &MprisPlayer::slotCoverArtFound);
     }
+
+    for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
+        DeckAttributes* attributes = new DeckAttributes(i,
+                m_pPlayerManager->getDeck(i),
+                i % 2 == 0 ? EngineChannel::RIGHT : EngineChannel::LEFT);
+        m_deckAttributes.append(attributes);
+        connect(attributes, &DeckAttributes::playChanged, this, &MprisPlayer::slotPlayChanged);
+        connect(attributes,
+                &DeckAttributes::playPositionChanged,
+                this,
+                &MprisPlayer::slotPlayPositionChanged);
+        ControlProxy* volume = new ControlProxy(ConfigKey(attributes->group, "volume"));
+        m_CPDeckVolumes.append(volume);
+        volume->connectValueChanged(this, &MprisPlayer::slotVolumeChanged);
+    }
+
+    m_pCPAutoDjEnabled = new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
+    m_pCPAutoDjEnabled->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
+
+    m_pCPAutoDJIdle = new ControlProxy(ConfigKey("[AutoDJ]", "idle"), this);
+    m_pCPAutoDJIdle->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
+
+    m_pCPFadeNow = new ControlProxy(ConfigKey("[AutoDJ]", "fade_now"), this);
 }
 
 QString MprisPlayer::playbackStatus() const {
-    if (!AUTODJENABLED)
+    if (!autoDjEnabled())
         return kPlaybackStatusStopped;
     for (DeckAttributes *attrib : m_deckAttributes) {
         if (attrib->isPlaying())
@@ -63,7 +77,7 @@ QString MprisPlayer::playbackStatus() const {
 }
 
 QString MprisPlayer::loopStatus() const {
-    if (!AUTODJENABLED)
+    if (!autoDjEnabled())
         return kLoopStatusNone;
     for (DeckAttributes *attrib : m_deckAttributes) {
         if (attrib->isRepeat() && attrib->isPlaying())
@@ -107,7 +121,7 @@ void MprisPlayer::setVolume(double value) {
 }
 
 qlonglong MprisPlayer::position() const {
-    if (AUTODJIDLE) {
+    if (autoDjIdle()) {
         for (unsigned int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
             ControlProxy playing(ConfigKey(PlayerManager::groupForDeck(i), "play"));
             if (playing.toBool()) {
@@ -124,7 +138,7 @@ qlonglong MprisPlayer::position() const {
 }
 
 bool MprisPlayer::canGoNext() const {
-    return AUTODJIDLE;
+    return autoDjIdle();
 }
 
 bool MprisPlayer::canGoPrevious() const {
@@ -140,17 +154,17 @@ bool MprisPlayer::canPause() const {
 }
 
 bool MprisPlayer::canSeek() const {
-    return AUTODJIDLE;
+    return autoDjIdle();
 }
 
 void MprisPlayer::nextTrack() {
-    if (AUTODJIDLE) {
+    if (autoDjIdle()) {
         m_pCPFadeNow->set(true);
     }
 }
 
 void MprisPlayer::pause() {
-    if (AUTODJIDLE) {
+    if (autoDjIdle()) {
         DeckAttributes *playingDeck = findPlayingDeck();
         if (playingDeck != nullptr) {
             playingDeck->stop();
@@ -166,7 +180,7 @@ void MprisPlayer::pause() {
 }
 
 void MprisPlayer::playPause() {
-    if (AUTODJIDLE) {
+    if (autoDjIdle()) {
         DeckAttributes *playingDeck = findPlayingDeck();
         if (playingDeck != nullptr) {
             playingDeck->stop();
@@ -185,9 +199,6 @@ void MprisPlayer::playPause() {
 }
 
 void MprisPlayer::play() {
-    if (!m_bComponentsInitialized) {
-        return;
-    }
     if (!m_pCPAutoDjEnabled->toBool()) {
         m_pCPAutoDjEnabled->set(true);
         return;
@@ -203,7 +214,7 @@ void MprisPlayer::play() {
 }
 
 qlonglong MprisPlayer::seek(qlonglong offset, bool& success) {
-    if (AUTODJIDLE) {
+    if (autoDjIdle()) {
         DeckAttributes *playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {
             success = false;
@@ -231,7 +242,7 @@ qlonglong MprisPlayer::seek(qlonglong offset, bool& success) {
 }
 
 qlonglong MprisPlayer::setPosition(const QDBusObjectPath& trackId, qlonglong position, bool& success) {
-    if (AUTODJIDLE) {
+    if (autoDjIdle()) {
         DeckAttributes *playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {
             success = false;
@@ -263,32 +274,6 @@ qlonglong MprisPlayer::setPosition(const QDBusObjectPath& trackId, qlonglong pos
 
 void MprisPlayer::openUri(const QString& uri) {
     qDebug() << "openUri" << uri << "not yet implemented";
-}
-
-void MprisPlayer::mixxxComponentsInitialized() {
-    m_bComponentsInitialized = true;
-
-    m_pCPAutoDjEnabled = new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
-    m_pCPFadeNow = new ControlProxy(ConfigKey("[AutoDJ]", "fade_now"), this);
-    m_pCPAutoDJIdle = new ControlProxy(ConfigKey("[AutoDJ]", "idle"), this);
-
-    for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
-        DeckAttributes *attributes = new DeckAttributes
-                                 (i,
-                                  m_pPlayerManager->getDeck(i),
-                                  i%2==0 ? EngineChannel::RIGHT : EngineChannel::LEFT);
-        m_deckAttributes.append(attributes);
-        connect(attributes, &DeckAttributes::playChanged,
-                this, &MprisPlayer::slotPlayChanged);
-        connect(attributes, &DeckAttributes::playPositionChanged,
-                this, &MprisPlayer::slotPlayPositionChanged);
-        ControlProxy *volume = new ControlProxy(ConfigKey(attributes->group, "volume"));
-        m_CPDeckVolumes.append(volume);
-        volume->connectValueChanged(this, &MprisPlayer::slotVolumeChanged);
-    }
-
-    m_pCPAutoDjEnabled->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
-    m_pCPAutoDJIdle->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
 }
 
 void MprisPlayer::slotChangeProperties(double enabled) {
@@ -350,7 +335,7 @@ void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
 }
 
 void MprisPlayer::slotPlayChanged(DeckAttributes *pDeck, bool playing) {
-    if (!AUTODJENABLED)
+    if (!autoDjEnabled())
         return;
     bool otherDeckPlaying = false;
     DeckAttributes *playingDeck = playing ? pDeck : nullptr;
@@ -382,7 +367,7 @@ MprisPlayer::~MprisPlayer() {
 }
 
 void MprisPlayer::slotPlayPositionChanged(DeckAttributes *pDeck, double position) {
-    if (AUTODJIDLE) {
+    if (autoDjIdle()) {
         qlonglong playPosition = static_cast<qlonglong>(position * //Fraction of duration
                                                         pDeck->getLoadedTrack()->getDuration() * //Duration in seconds
                                                         1e6);
@@ -475,4 +460,12 @@ QVariantMap MprisPlayer::getVariantMapMetadata() {
     metadata.insert("xesam:title", m_currentMetadata.title);
     metadata.insert("mpris:artUrl",m_currentMetadata.coverartUrl);
     return metadata;
+}
+
+bool MprisPlayer::autoDjEnabled() const {
+    return m_pCPAutoDjEnabled->toBool();
+}
+
+bool MprisPlayer::autoDjIdle() const {
+    return autoDjEnabled() && m_pCPAutoDJIdle->toBool();
 }

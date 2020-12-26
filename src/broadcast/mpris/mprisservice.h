@@ -5,17 +5,17 @@
 #include "broadcast/mpris/mpris.h"
 #include "mixxx.h"
 
+class PlayerManagerInterface;
+
 class MprisService : public ScrobblingService {
     Q_OBJECT
   public:
-    explicit MprisService(MixxxMainWindow *pWindow,
-                          PlayerManager *pPlayer,
-                          UserSettingsPointer pSettings);
+    MprisService(MixxxMainWindow* pWindow,
+            PlayerManagerInterface* pPlayer,
+            UserSettingsPointer pSettings);
     void slotBroadcastCurrentTrack(TrackPointer pTrack) override;
     void slotScrobbleTrack(TrackPointer pTrack) override;
     void slotAllTracksPaused() override;
-  private slots:
-    void slotComponentsInitialized();
   private:
     Mpris m_mpris;
     ControlProxy* m_pCPAutoDJEnabled;

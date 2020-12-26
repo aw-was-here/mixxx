@@ -8,15 +8,15 @@
 #include "control/controlproxy.h"
 #include "library/autodj/autodjprocessor.h"
 
-class PlayerManager;
+class PlayerManagerInterface;
 
 class MprisPlayer : public QObject {
     Q_OBJECT
   public:
-    MprisPlayer(PlayerManager *pPlayerManager,
-                MixxxMainWindow *pWindow,
-                Mpris *pMpris,
-                UserSettingsPointer pSettings);
+    MprisPlayer(PlayerManagerInterface* pPlayerManager,
+            MixxxMainWindow* pWindow,
+            Mpris* pMpris,
+            UserSettingsPointer pSettings);
 
     ~MprisPlayer() override;
     QString playbackStatus() const;
@@ -42,7 +42,6 @@ class MprisPlayer : public QObject {
     void openUri(const QString& uri);
 
   private slots:
-    void mixxxComponentsInitialized();
     void slotChangeProperties(double enabled);
     void slotPlayChanged(DeckAttributes *pDeck, bool playing);
     void slotPlayPositionChanged(DeckAttributes *pDeck, double position);
@@ -61,6 +60,8 @@ class MprisPlayer : public QObject {
     QVariantMap getVariantMapMetadata();
     double getAverageVolume() const;
     DeckAttributes* findPlayingDeck() const;
+    bool autoDjEnabled() const;
+    bool autoDjIdle() const;
     const QString autoDJDependentProperties[4] = {
             "CanGoNext",
             "CanPlay",
@@ -72,10 +73,10 @@ class MprisPlayer : public QObject {
     ControlProxy* m_pCPFadeNow;
     ControlProxy* m_pCPAutoDJIdle;
     QList<ControlProxy*> m_CPDeckVolumes;
-    PlayerManager *m_pPlayerManager;
+    PlayerManagerInterface* m_pPlayerManager;
     MixxxMainWindow *m_pWindow;
     QString m_pausedDeck;
-    bool m_bComponentsInitialized, m_bPropertiesEnabled;
+    bool m_bPropertiesEnabled;
     Mpris *m_pMpris;
     QList<DeckAttributes*> m_deckAttributes;
     UserSettingsPointer m_pSettings;

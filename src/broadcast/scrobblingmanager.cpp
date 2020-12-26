@@ -1,14 +1,18 @@
+#include "broadcast/scrobblingmanager.h"
+
 #include <QObject>
 
 #include "broadcast/filelistener/filelistener.h"
-#include "broadcast/scrobblingmanager.h"
+#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
+#ifdef __MPRIS__
+#include "broadcast/mpris/mprisservice.h"
+#endif
 #include "control/controlproxy.h"
 #include "engine/enginexfader.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_scrobblingmanager.cpp"
-
 
 #ifdef MIXXX_BUILD_DEBUG
 QDebug operator<<(QDebug debug, const ScrobblingManager::TrackInfo& info) {
@@ -63,26 +67,38 @@ void TotalVolumeThreshold::setVolumeThreshold(double volume) {
     m_volumeThreshold = volume;
 }
 
-ScrobblingManager::ScrobblingManager(PlayerManagerInterface *manager)
-        :  m_pManager(manager),
-           m_pAudibleStrategy(new TotalVolumeThreshold(this, 0.20)),
-           m_pTimer(new TrackTimers::GUITickTimer),
-           m_scrobbledAtLeastOnce(false),
-           m_GuiTickObject(ConfigKey("[Master]", "guiTick50ms")){
+ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
+        std::shared_ptr<PlayerManager> pPlayerManager,
+        MixxxMainWindow* pWindow)
+        : m_pPlayerManager(pPlayerManager),
+          m_pAudibleStrategy(new TotalVolumeThreshold(this, 0.20)),
+          m_pTimer(new TrackTimers::GUITickTimer),
+          m_scrobbledAtLeastOnce(false),
+          m_GuiTickObject(ConfigKey("[Master]", "guiTick50ms")) {
     connect(m_pTimer.get(), &TrackTimers::RegularTimer::timeout,
             this, &ScrobblingManager::slotCheckAudibleTracks);
     m_GuiTickObject.connectValueChanged(this, &ScrobblingManager::slotGuiTick);
     m_pTimer->start(1000);
-}
 
-void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy *pStrategy) {
-    m_pAudibleStrategy.reset(pStrategy);
-}
+    m_pBroadcaster = std::make_unique<MetadataBroadcaster>();
+    m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
+    m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
+#ifdef __MPRIS__
+    m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(
+            new MprisService(pWindow, pPlayerManager.get(), pConfig)));
+#endif
 
-void ScrobblingManager::setMetadataBroadcaster(MetadataBroadcasterInterface *pBroadcast) {
-    m_pBroadcaster.reset(pBroadcast);
+    connect(pPlayerManager.get(),
+            &PlayerManager::numberOfDecksChanged,
+            this,
+            &ScrobblingManager::onNumberOfDecksChanged);
+
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             m_pBroadcaster.get(), SLOT(slotNowListening(TrackPointer)));
+}
+
+void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy* pStrategy) {
+    m_pAudibleStrategy.reset(pStrategy);
 }
 
 void ScrobblingManager::setTimer(TrackTimers::RegularTimer *timer) {
@@ -110,7 +126,7 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
 #endif
     DEBUG_ASSERT(m_trackInfoHashDict.contains(pPausedTrack->getId()));
     for (QString playerString : m_trackInfoHashDict.value(pPausedTrack->getId()).m_players) {
-        BaseTrackPlayer *player = m_pManager->getPlayer(playerString);
+        BaseTrackPlayer* player = m_pPlayerManager->getPlayer(playerString);
         DEBUG_ASSERT(player);
         if (!player->isTrackPaused()) {
             return;
@@ -122,7 +138,7 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
 void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack, const QString& playerGroup) {
     if (!pResumedTrack)
         return;
-    BaseTrackPlayer *player = m_pManager->getPlayer(playerGroup);
+    BaseTrackPlayer* player = m_pPlayerManager->getPlayer(playerGroup);
     if (!m_trackInfoHashDict.contains(pResumedTrack->getId())) {
         m_trackInfoHashDict[pResumedTrack->getId()].init(m_trackInfoFactory, pResumedTrack);
     }
@@ -166,8 +182,6 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString
             ++it;
         }
     }
-
-
 }
 
 
@@ -196,7 +210,7 @@ void ScrobblingManager::slotCheckAudibleTracks() {
     for (auto& trackInfo : m_trackInfoHashDict) {
         bool audible = false;
         for (QString playerGroup : trackInfo.m_players) {
-            BaseTrackPlayer *player = m_pManager->getPlayer(playerGroup);
+            BaseTrackPlayer* player = m_pPlayerManager->getPlayer(playerGroup);
             if (m_pAudibleStrategy->isPlayerAudible(player)) {
                 audible = true;
                 break;
@@ -210,4 +224,26 @@ void ScrobblingManager::slotCheckAudibleTracks() {
         }
     }
     m_pTimer->start(1000);
+}
+
+void ScrobblingManager::onNumberOfDecksChanged(int count) {
+    for (const auto& connection : m_deckConnections) {
+        disconnect(connection);
+    }
+    for (int deck = 1; deck <= count; ++deck) {
+        Deck* pDeck = m_pPlayerManager->getDeck(deck);
+        QString group = pDeck->getGroup();
+        m_deckConnections.append(connect(pDeck,
+                &Deck::trackPaused,
+                this,
+                &ScrobblingManager::slotTrackPaused));
+        m_deckConnections.append(connect(pDeck,
+                &Deck::trackResumed,
+                this,
+                [this, group](TrackPointer pTrack) -> void { slotTrackResumed(pTrack, group); }));
+        m_deckConnections.append(connect(pDeck,
+                &Deck::newTrackLoaded,
+                this,
+                [this, group](TrackPointer pTrack) -> void { slotNewTrackLoaded(pTrack, group); }));
+    }
 }

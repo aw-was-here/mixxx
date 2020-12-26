@@ -39,11 +39,11 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
     Q_PROPERTY(bool CanControl READ canControl)
 
   public:
-    explicit MediaPlayer2Player(PlayerManager *playerManager,
-                                QObject *parent,
-                                MixxxMainWindow *pWindow,
-                                Mpris *pMpris,
-                                UserSettingsPointer pSettings);
+    explicit MediaPlayer2Player(PlayerManagerInterface* playerManager,
+            QObject* parent,
+            MixxxMainWindow* pWindow,
+            Mpris* pMpris,
+            UserSettingsPointer pSettings);
 
     QString playbackStatus() const;
     QString loopStatus() const;
