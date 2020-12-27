@@ -1,5 +1,5 @@
-
 #include "broadcast/filelistener/metadatafileworker.h"
+
 #include "moc_metadatafileworker.cpp"
 
 MetadataFileWorker::MetadataFileWorker(const QString& filePath)
@@ -10,12 +10,12 @@ void MetadataFileWorker::slotDeleteFile() {
     m_file.remove();
 }
 
-void MetadataFileWorker::slotMoveFile(QString destination) {
+void MetadataFileWorker::slotMoveFile(const QString& destination) {
     m_file.remove();
     m_file.setFileName(destination);
 }
 
-void MetadataFileWorker::slotWriteMetadataToFile(QByteArray fileContents) {
+void MetadataFileWorker::slotWriteMetadataToFile(const QByteArray& fileContents) {
     m_file.open(QIODevice::WriteOnly |
             QIODevice::Text |
             QIODevice::Unbuffered);
