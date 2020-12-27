@@ -1,8 +1,11 @@
-
 #include "preferences/dialog/dlgprefmetadata.h"
-#include "moc_dlgprefmetadata.cpp"
 
-DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, UserSettingsPointer pSettings)
+#include "broadcast/scrobblingservice.h"
+#include "moc_dlgprefmetadata.cpp"
+#include "preferences/listenbrainzsettings.h"
+#include "preferences/metadatafilesettings.h"
+
+DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, const UserSettingsPointer& pSettings)
         : DlgPreferencePage(pParent),
           m_pSettings(pSettings),
           m_pFileSettings(nullptr),
@@ -10,6 +13,15 @@ DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, UserSettingsPointer pSettings
     setupUi(this);
     setFileSettings();
     setListenBrainzSettings();
+
+    connect(enableListenbrainzBox,
+            &QCheckBox::toggled,
+            listenBrainzUserTokenLineEdit,
+            &QLineEdit::setEnabled);
+    connect(enableFileListener, &QCheckBox::toggled, fileFormatLineEdit, &QLineEdit::setEnabled);
+    connect(enableFileListener, &QCheckBox::toggled, filePathButton, &QPushButton::setEnabled);
+    connect(enableFileListener, &QCheckBox::toggled, filePathLineEdit, &QLineEdit::setEnabled);
+    connect(enableFileListener, &QCheckBox::toggled, fileEncodingComboBox, &QComboBox::setEnabled);
 }
 
 void DlgPrefMetadata::setFileSettings() {
