@@ -14,7 +14,8 @@ ListenBrainzSettingsManager::ListenBrainzSettingsManager(
     setUpWidgets();
 }
 
-ListenBrainzSettings ListenBrainzSettingsManager::getPersistedSettings(UserSettingsPointer pSettings) {
+ListenBrainzSettings ListenBrainzSettingsManager::getPersistedSettings(
+        UserSettingsPointer pSettings) {
     ListenBrainzSettings ret;
     ret.enabled = pSettings->getValue(kListenBrainzEnabled, defaultListenBrainzEnabled);
     ret.userToken = pSettings->getValue(kListenBrainzUserToken, QString());

@@ -1,4 +1,5 @@
 #include "test/trackplayedtimer_test.h"
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "track/track.h"

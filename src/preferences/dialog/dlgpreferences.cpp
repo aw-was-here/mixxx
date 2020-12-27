@@ -10,11 +10,6 @@
 #include <QTabBar>
 #include <QTabWidget>
 
-#include <QResizeEvent>
-#include <QScreen>
-
-#include "preferences/dialog/dlgpreferences.h"
-
 #include "controllers/dlgprefcontrollers.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
@@ -172,8 +167,8 @@ DlgPreferences::DlgPreferences(
 #endif
     addPageWidget(PreferencesPage(
             new DlgPrefMetadata(this, m_pConfig),
-            createTreeItem(tr("Metadata Broadcast"), QIcon(":/images/preferences/ic_preferences_broadcast.png"))));
-
+            createTreeItem(tr("Metadata Broadcast"),
+                    QIcon(":/images/preferences/ic_preferences_broadcast.png"))));
     addPageWidget(PreferencesPage(
             new DlgPrefRecord(this, m_pConfig),
             createTreeItem(tr("Recording"), QIcon(":/images/preferences/ic_preferences_recording.svg"))));

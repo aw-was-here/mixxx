@@ -1,7 +1,7 @@
-#ifndef MEDIAPLAYER2PLAYER_H
-#define MEDIAPLAYER2PLAYER_H
+#pragma once
 
 #include <mixxx.h>
+
 #include <QStringList>
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QtDBus/QDBusObjectPath>
@@ -80,5 +80,3 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor {
   private:
     MprisPlayer m_mprisPlayer;
 };
-
-#endif // MEDIAPLAYER2PLAYER_H

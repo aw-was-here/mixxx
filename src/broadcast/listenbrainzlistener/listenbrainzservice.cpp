@@ -1,8 +1,8 @@
+#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
 
 #include <QJsonObject>
 
 #include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
-#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
 #include "broadcast/listenbrainzlistener/networkmanager.h"
 #include "preferences/listenbrainzsettings.h"
 

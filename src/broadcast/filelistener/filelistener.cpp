@@ -1,8 +1,8 @@
+#include "broadcast/filelistener/filelistener.h"
 
 #include <QTextCodec>
 #include <QtConcurrentRun>
 
-#include "broadcast/filelistener/filelistener.h"
 #include "broadcast/filelistener/metadatafileworker.h"
 #include "preferences/metadatafilesettings.h"
 

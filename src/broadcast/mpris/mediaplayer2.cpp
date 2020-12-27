@@ -1,8 +1,9 @@
+#include "broadcast/mpris/mediaplayer2.h"
+
 #include <QApplication>
 #include <QDebug>
 #include <QWidget>
 
-#include "mediaplayer2.h"
 #include "mixxx.h"
 #include "sources/soundsourceproxy.h"
 

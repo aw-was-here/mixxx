@@ -1,13 +1,12 @@
+#include "broadcast/mpris/mprisplayer.h"
 
 #include <QCryptographicHash>
 #include <QtGlobal>
 
-#include "broadcast/mpris/mprisplayer.h"
 #include "library/coverartcache.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "mprisplayer.h"
 
 namespace {
 
@@ -236,7 +235,10 @@ qlonglong MprisPlayer::seek(qlonglong offset, bool& success) {
     return 0;
 }
 
-qlonglong MprisPlayer::setPosition(const QDBusObjectPath& trackId, qlonglong position, bool& success) {
+qlonglong MprisPlayer::setPosition(
+        const QDBusObjectPath& trackId,
+        qlonglong position,
+        bool& success) {
     if (autoDjIdle()) {
         DeckAttributes* playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {

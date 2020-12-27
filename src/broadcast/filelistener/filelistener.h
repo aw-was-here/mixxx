@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QThread>
+
 #include "broadcast/scrobblingservice.h"
 #include "control/controlpushbutton.h"
 #include "preferences/dialog/dlgprefmetadata.h"

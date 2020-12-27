@@ -1,3 +1,5 @@
+#include "test/scrobblingmanager_test.h"
+
 #include <QObject>
 #include <QString>
 #include <functional>
@@ -9,7 +11,6 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/deck.h"
 #include "mixer/playermanager.h"
-#include "test/scrobblingmanager_test.h"
 #include "track/track.h"
 #include "track/trackplaytimers.h"
 

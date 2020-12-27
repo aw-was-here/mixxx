@@ -1,9 +1,10 @@
-#include <mixxx.h>
+#include "broadcast/mpris/mediaplayer2player.h"
+
 #include <QApplication>
 #include <QDBusConnection>
 #include <QDBusMessage>
 
-#include "broadcast/mpris/mediaplayer2player.h"
+#include "mixxx.h"
 
 MediaPlayer2Player::MediaPlayer2Player(PlayerManagerInterface* playerManager,
         QObject* parent,

@@ -1,7 +1,7 @@
+#include "broadcast/metadatabroadcast.h"
 
 #include <QLinkedListIterator>
 
-#include "broadcast/metadatabroadcast.h"
 #include "mixer/playerinfo.h"
 
 MetadataBroadcaster::MetadataBroadcaster()

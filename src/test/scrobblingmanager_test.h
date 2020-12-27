@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+
 #include "broadcast/metadatabroadcast.h"
 #include "gmock/gmock.h"
 #include "mixer/basetrackplayer.h"

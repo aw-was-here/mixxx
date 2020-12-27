@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QPushButton>
 #include <QStyledItemDelegate>
+
 #include "control/controlproxy.h"
 #include "preferences/usersettings.h"
 

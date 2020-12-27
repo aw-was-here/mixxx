@@ -1,3 +1,5 @@
+#include "preferences/metadatafilesettings.h"
+
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QFileDialog>
@@ -5,10 +7,7 @@
 #include <QMouseEvent>
 #include <QObject>
 #include <QTextCodec>
-
 #include <algorithm>
-
-#include "metadatafilesettings.h"
 
 FileSettings MetadataFileSettings::s_latestSettings;
 

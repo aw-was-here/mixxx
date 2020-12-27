@@ -56,7 +56,9 @@ class ScrobblingManager : public QObject {
     ~ScrobblingManager() = default;
     void setAudibleStrategy(TrackAudibleStrategy* pStrategy);
     void setTimer(TrackTimers::RegularTimer* timer);
-    void setTrackInfoFactory(const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory);
+    void setTrackInfoFactory(
+            const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>&
+                    factory);
     bool hasScrobbledAnyTrack() const;
 
   public slots:

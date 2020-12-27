@@ -1,7 +1,7 @@
+#include "broadcast/listenbrainzlistener/networkmanager.h"
 
 #include <iostream>
 
-#include "broadcast/listenbrainzlistener/networkmanager.h"
 #include "broadcast/listenbrainzlistener/networkreply.h"
 #include "broadcast/listenbrainzlistener/networkrequest.h"
 

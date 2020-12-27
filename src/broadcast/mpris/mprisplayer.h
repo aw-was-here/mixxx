@@ -1,12 +1,12 @@
 #pragma once
 
-#include <mixxx.h>
 #include <QObject>
 #include <QtDBus/QDBusObjectPath>
 
 #include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
 #include "library/autodj/autodjprocessor.h"
+#include "mixxx.h"
 
 class PlayerManagerInterface;
 
