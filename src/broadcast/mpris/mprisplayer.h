@@ -14,7 +14,6 @@ class MprisPlayer : public QObject {
     Q_OBJECT
   public:
     MprisPlayer(PlayerManagerInterface* pPlayerManager,
-            MixxxMainWindow* pWindow,
             Mpris* pMpris,
             UserSettingsPointer pSettings);
 
@@ -48,7 +47,7 @@ class MprisPlayer : public QObject {
     void slotVolumeChanged(double volume);
     void slotCoverArtFound(const QObject* requestor,
             const CoverInfoRelative& info,
-            QPixmap pixmap,
+            const QPixmap& pixmap,
             bool fromCache);
 
   private:
@@ -72,7 +71,6 @@ class MprisPlayer : public QObject {
     ControlProxy* m_pCPAutoDJIdle;
     QList<ControlProxy*> m_CPDeckVolumes;
     PlayerManagerInterface* m_pPlayerManager;
-    MixxxMainWindow* m_pWindow;
     QString m_pausedDeck;
     bool m_bPropertiesEnabled;
     Mpris* m_pMpris;

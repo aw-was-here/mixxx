@@ -25,11 +25,9 @@ const QString playerInterfaceName = "org.mpris.MediaPlayer2.Player";
 } // namespace
 
 MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
-        MixxxMainWindow* pWindow,
         Mpris* pMpris,
         UserSettingsPointer pSettings)
         : m_pPlayerManager(pPlayerManager),
-          m_pWindow(pWindow),
           m_bPropertiesEnabled(false),
           m_pMpris(pMpris),
           m_pSettings(pSettings) {
@@ -68,7 +66,7 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
 QString MprisPlayer::playbackStatus() const {
     if (!autoDjEnabled())
         return kPlaybackStatusStopped;
-    for (DeckAttributes* attrib : m_deckAttributes) {
+    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
         if (attrib->isPlaying())
             return kPlaybackStatusPlaying;
     }
@@ -78,7 +76,7 @@ QString MprisPlayer::playbackStatus() const {
 QString MprisPlayer::loopStatus() const {
     if (!autoDjEnabled())
         return kLoopStatusNone;
-    for (DeckAttributes* attrib : m_deckAttributes) {
+    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
         if (attrib->isRepeat() && attrib->isPlaying())
             return kLoopStatusTrack;
     }
@@ -89,12 +87,12 @@ QString MprisPlayer::loopStatus() const {
 
 void MprisPlayer::setLoopStatus(const QString& value) {
     if (value == kLoopStatusNone || value == kLoopStatusTrack) {
-        for (DeckAttributes* attribute : m_deckAttributes) {
+        for (DeckAttributes* attribute : qAsConst(m_deckAttributes)) {
             attribute->setRepeat(value == kLoopStatusTrack);
         }
         m_pSettings->setValue(ConfigKey("[Auto DJ]", "Requeue"), false);
     } else {
-        for (DeckAttributes* attribute : m_deckAttributes) {
+        for (DeckAttributes* attribute : qAsConst(m_deckAttributes)) {
             attribute->setRepeat(false);
         }
         m_pSettings->setValue(ConfigKey("[Auto DJ]", "Requeue"), true);
@@ -112,7 +110,7 @@ double MprisPlayer::volume() const {
 }
 
 void MprisPlayer::setVolume(double value) {
-    for (DeckAttributes* attrib : m_deckAttributes) {
+    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
         ControlProxy volume(ConfigKey(attrib->group, "volume"));
         volume.set(value);
     }
@@ -170,7 +168,7 @@ void MprisPlayer::pause() {
             m_pausedDeck = playingDeck->group;
         }
     } else {
-        for (DeckAttributes* attribute : m_deckAttributes) {
+        for (DeckAttributes* attribute : qAsConst(m_deckAttributes)) {
             attribute->stop();
         }
     }
@@ -252,7 +250,7 @@ qlonglong MprisPlayer::setPosition(
             success = false;
             return 0;
         }
-        int id = path.right(path.size() - lastSlashIndex - 1).toInt();
+        int id = path.rightRef(path.size() - lastSlashIndex - 1).toInt();
         if (id != playingDeck->getLoadedTrack()->getId().value()) {
             success = false;
             return 0;
@@ -276,7 +274,7 @@ void MprisPlayer::openUri(const QString& uri) {
 
 void MprisPlayer::slotChangeProperties(double enabled) {
     if (enabled != m_bPropertiesEnabled) {
-        broadcastPropertiesChange(enabled);
+        broadcastPropertiesChange(enabled >= 0);
         m_bPropertiesEnabled = static_cast<bool>(enabled);
     }
 }
@@ -357,7 +355,7 @@ void MprisPlayer::slotPlayChanged(DeckAttributes* pDeck, bool playing) {
 }
 
 MprisPlayer::~MprisPlayer() {
-    for (DeckAttributes* attrib : m_deckAttributes) {
+    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
         delete attrib;
     }
 }
@@ -389,7 +387,7 @@ void MprisPlayer::slotVolumeChanged(double volume) {
 double MprisPlayer::getAverageVolume() const {
     double averageVolume = 0.0;
     unsigned int numberOfPlayingDecks = 0;
-    for (DeckAttributes* attrib : m_deckAttributes) {
+    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
         if (attrib->isPlaying()) {
             ControlProxy volume(ConfigKey(attrib->group, "volume"));
             averageVolume += volume.get();
@@ -422,7 +420,7 @@ void MprisPlayer::setRate(double value) {
 
 void MprisPlayer::slotCoverArtFound(const QObject* requestor,
         const CoverInfoRelative& info,
-        QPixmap pixmap,
+        const QPixmap& pixmap,
         bool fromCache) {
     Q_UNUSED(info);
     Q_UNUSED(fromCache);
