@@ -1,5 +1,6 @@
 
 #include "preferences/dialog/dlgprefmetadata.h"
+#include "moc_dlgprefmetadata.cpp"
 
 DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),

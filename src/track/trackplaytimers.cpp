@@ -1,5 +1,7 @@
 #include "track/trackplaytimers.h"
 
+#include "moc_trackplaytimers.cpp"
+
 TrackTimers::GUITickTimer::GUITickTimer()
         : m_msSoFar(0.0),
           m_msTarget(0.0),

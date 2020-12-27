@@ -7,6 +7,7 @@
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_mprisplayer.cpp"
 
 namespace {
 

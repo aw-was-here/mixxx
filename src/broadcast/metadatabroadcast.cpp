@@ -3,6 +3,7 @@
 #include <QLinkedListIterator>
 
 #include "mixer/playerinfo.h"
+#include "moc_metadatabroadcast.cpp"
 
 MetadataBroadcaster::MetadataBroadcaster()
         : m_gracePeriodSeconds(5 * 60) {

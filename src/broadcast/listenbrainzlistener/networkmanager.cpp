@@ -4,6 +4,7 @@
 
 #include "broadcast/listenbrainzlistener/networkreply.h"
 #include "broadcast/listenbrainzlistener/networkrequest.h"
+#include "moc_networkmanager.cpp"
 
 NetworkReply* FakeNetworkManager::post(const NetworkRequest* request, const QByteArray& data) {
     NetworkReply* reply = new FakeNetworkReply;

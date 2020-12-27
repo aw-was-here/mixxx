@@ -6,6 +6,7 @@
 #include "broadcast/mpris/mediaplayer2player.h"
 #include "broadcast/mpris/mediaplayer2playlists.h"
 #include "broadcast/mpris/mediaplayer2tracklist.h"
+#include "moc_mpris.cpp"
 #include "track/track.h"
 
 namespace {

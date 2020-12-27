@@ -4,6 +4,7 @@
 
 #include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
 #include "broadcast/listenbrainzlistener/networkmanager.h"
+#include "moc_listenbrainzservice.cpp"
 #include "preferences/listenbrainzsettings.h"
 
 ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)

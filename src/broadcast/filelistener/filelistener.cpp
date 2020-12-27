@@ -4,6 +4,7 @@
 #include <QtConcurrentRun>
 
 #include "broadcast/filelistener/metadatafileworker.h"
+#include "moc_filelistener.cpp"
 #include "preferences/metadatafilesettings.h"
 
 FileListener::FileListener(UserSettingsPointer pConfig)

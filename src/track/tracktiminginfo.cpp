@@ -1,5 +1,7 @@
 #include "track/tracktiminginfo.h"
 
+#include "moc_tracktiminginfo.cpp"
+
 TrackTimingInfo::TrackTimingInfo(TrackPointer pTrack)
         : m_pElapsedTimer(new TrackTimers::ElapsedTimerQt()),
           m_pTimer(new TrackTimers::GUITickTimer()),
