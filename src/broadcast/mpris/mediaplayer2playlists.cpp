@@ -2,6 +2,8 @@
 
 #include <QApplication>
 
+#include "moc_mediaplayer2playlists.cpp"
+
 MediaPlayer2Playlists::MediaPlayer2Playlists(QObject* parent)
         : QDBusAbstractAdaptor(parent) {
 }

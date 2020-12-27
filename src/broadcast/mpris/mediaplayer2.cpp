@@ -5,6 +5,7 @@
 #include <QWidget>
 
 #include "mixxxmainwindow.h"
+#include "moc_mediaplayer2.cpp"
 #include "sources/soundsourceproxy.h"
 
 MediaPlayer2::MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent)

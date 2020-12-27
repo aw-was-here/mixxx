@@ -9,6 +9,8 @@
 #include <QTextCodec>
 #include <algorithm>
 
+#include "moc_metadatafilesettings.cpp"
+
 FileSettings MetadataFileSettings::s_latestSettings;
 
 MetadataFileSettings::MetadataFileSettings(UserSettingsPointer pSettings,

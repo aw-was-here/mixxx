@@ -1,6 +1,6 @@
-
-
 #include "preferences/listenbrainzsettings.h"
+
+#include "moc_listenbrainzsettings.cpp"
 
 ListenBrainzSettings ListenBrainzSettingsManager::s_latestSettings;
 
