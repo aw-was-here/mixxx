@@ -49,7 +49,7 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
                 &DeckAttributes::playPositionChanged,
                 this,
                 &MprisPlayer::slotPlayPositionChanged);
-        ControlProxy* volume = new ControlProxy(ConfigKey(attributes->group, "volume"));
+        ControlProxy* volume = new ControlProxy(ConfigKey(attributes->group, "volume"), this);
         m_CPDeckVolumes.append(volume);
         volume->connectValueChanged(this, &MprisPlayer::slotVolumeChanged);
     }
@@ -61,6 +61,12 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
     m_pCPAutoDJIdle->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
 
     m_pCPFadeNow = new ControlProxy(ConfigKey("[AutoDJ]", "fade_now"), this);
+}
+
+MprisPlayer::~MprisPlayer() {
+    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
+        delete attrib;
+    }
 }
 
 QString MprisPlayer::playbackStatus() const {
@@ -351,12 +357,6 @@ void MprisPlayer::slotPlayChanged(DeckAttributes* pDeck, bool playing) {
         m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", QVariantMap());
     } else if (!playing || !otherDeckPlaying) {
         requestMetadataFromTrack(playingDeck->getLoadedTrack(), true);
-    }
-}
-
-MprisPlayer::~MprisPlayer() {
-    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
-        delete attrib;
     }
 }
 
