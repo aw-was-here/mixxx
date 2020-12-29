@@ -113,6 +113,17 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     double maxVolume = 0;
     int maxDeck = -1;
 
+    CSAMPLE_GAIN xfl, xfr;
+    // TODO: supply correct parameters to the function. If the hamster style
+    // for the crossfader is enabled, the result is currently wrong.
+    EngineXfader::getXfadeGains(m_pCOxfader->get(),
+            1.0,
+            0.0,
+            MIXXX_XFADER_ADDITIVE,
+            false,
+            &xfl,
+            &xfr);
+
     for (int i = 0; i < (int)PlayerManager::numDecks(); ++i) {
         DeckControls* pDc = getDeckControls(i);
 
@@ -128,12 +139,6 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         if (fvol == 0.0) {
             continue;
         }
-
-        CSAMPLE_GAIN xfl, xfr;
-        // TODO: supply correct parameters to the function. If the hamster style
-        // for the crossfader is enabled, the result is currently wrong.
-        EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, MIXXX_XFADER_ADDITIVE, false,
-                                    &xfl, &xfr);
 
         const auto orient = static_cast<int>(pDc->m_orientation.get());
         double xfvol;
@@ -151,16 +156,17 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             maxVolume = dvol;
         }
     }
-    if (maxDeck != m_currentlyPlayingDeck) {
-        m_currentlyPlayingDeck = maxDeck;
-        locker.unlock();
+    locker.unlock();
+
+    int oldDeck = m_currentlyPlayingDeck.fetchAndStoreRelease(maxDeck);
+    if (maxDeck != oldDeck) {
         emit currentPlayingDeckChanged(maxDeck);
         emit currentPlayingTrackChanged(getCurrentPlayingTrack());
     }
 }
 
 int PlayerInfo::getCurrentPlayingDeck() {
-    QMutexLocker locker(&m_mutex);
+    updateCurrentPlayingDeck();
     return m_currentlyPlayingDeck;
 }
 
