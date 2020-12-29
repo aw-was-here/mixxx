@@ -106,6 +106,7 @@ void MediaPlayer2Player::PlayPause() {
 }
 
 void MediaPlayer2Player::Stop() {
+    m_mprisPlayer.stop();
 }
 
 void MediaPlayer2Player::Play() {

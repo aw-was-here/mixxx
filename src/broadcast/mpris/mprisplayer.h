@@ -1,14 +1,15 @@
 #pragma once
 
 #include <QObject>
+#include <QTemporaryFile>
 #include <QtDBus/QDBusObjectPath>
 
 #include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
-#include "library/autodj/autodjprocessor.h"
 #include "mixxx.h"
 
 class PlayerManagerInterface;
+class DeckAttributes;
 
 class MprisPlayer : public QObject {
     Q_OBJECT
@@ -34,6 +35,7 @@ class MprisPlayer : public QObject {
     bool canSeek() const;
     void nextTrack();
     void pause();
+    void stop();
     void playPause();
     void play();
     qlonglong seek(qlonglong offset, bool& success);
@@ -49,6 +51,7 @@ class MprisPlayer : public QObject {
             const CoverInfoRelative& info,
             const QPixmap& pixmap,
             bool fromCache);
+    void slotPlayingTrackChanged(TrackPointer pTrack);
 
   private:
     void broadcastPropertiesChange(bool enabled);
@@ -71,10 +74,10 @@ class MprisPlayer : public QObject {
     ControlProxy* m_pCPAutoDJIdle;
     QList<ControlProxy*> m_CPDeckVolumes;
     PlayerManagerInterface* m_pPlayerManager;
-    QString m_pausedDeck;
     bool m_bPropertiesEnabled;
     Mpris* m_pMpris;
     QList<DeckAttributes*> m_deckAttributes;
+    DeckAttributes* m_pPlayableDeck;
     UserSettingsPointer m_pSettings;
 
     struct CurrentMetadata {
