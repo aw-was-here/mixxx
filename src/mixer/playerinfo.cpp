@@ -67,6 +67,11 @@ void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
         emit trackUnloaded(group, pOld);
     }
     emit trackLoaded(group, track);
+
+    if (m_currentlyPlayingDeck >= 0 &&
+            group == PlayerManager::groupForDeck(m_currentlyPlayingDeck)) {
+        emit currentPlayingTrackChanged(track);
+    }
 }
 
 bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
@@ -161,7 +166,11 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     int oldDeck = m_currentlyPlayingDeck.fetchAndStoreRelease(maxDeck);
     if (maxDeck != oldDeck) {
         emit currentPlayingDeckChanged(maxDeck);
-        emit currentPlayingTrackChanged(getCurrentPlayingTrack());
+        TrackPointer track;
+        if (maxDeck >= 0) {
+            track = getTrackInfo(PlayerManager::groupForDeck(maxDeck));
+        }
+        emit currentPlayingTrackChanged(track);
     }
 }
 
