@@ -167,8 +167,8 @@ DlgPreferences::DlgPreferences(
 #endif
     addPageWidget(PreferencesPage(
             new DlgPrefMetadata(this, m_pConfig),
-            createTreeItem(tr("Metadata Broadcast"),
-                    QIcon(":/images/preferences/ic_preferences_broadcast.png"))));
+            createTreeItem(tr("Metadata Output"),
+                    QIcon(":/images/preferences/ic_preferences_broadcast.svg"))));
     addPageWidget(PreferencesPage(
             new DlgPrefRecord(this, m_pConfig),
             createTreeItem(tr("Recording"), QIcon(":/images/preferences/ic_preferences_recording.svg"))));
