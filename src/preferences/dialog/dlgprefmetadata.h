@@ -1,7 +1,7 @@
 #pragma once
 
 #include "preferences/dialog/ui_dlgprefmetadatadlg.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 class MetadataFileSettings;
