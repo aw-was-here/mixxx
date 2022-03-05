@@ -31,8 +31,8 @@
 #   libavformat
 #   libavfilter
 #   libavutil
-#   libpostproc
 #   libswscale
+#   libswresample
 #
 # the following variables will be defined
 #
@@ -105,10 +105,10 @@ macro(find_component _component _pkgconfig _library _header)
   set(FFMPEG_${_component}_VERSION      ${PC_FFMPEG_${_component}_VERSION}      CACHE STRING "The ${_component} version number.")
 
   if (FFMPEG_${_component}_LIBRARIES AND FFMPEG_${_component}_INCLUDE_DIRS)
-    # message(STATUS "  - ${_component} found.")
+    message(STATUS "  - ${_component} ${FFMPEG_${_component}_VERSION} found.")
     set(FFMPEG_${_component}_FOUND TRUE)
   else ()
-    # message(STATUS "  - ${_component} not found.")
+    message(STATUS "  - ${_component} not found.")
   endif ()
 
   mark_as_advanced(
@@ -119,7 +119,7 @@ macro(find_component _component _pkgconfig _library _header)
 
 endmacro()
 
-
+message(STATUS "Searching for FFMPEG components")
 # Check for all possible component.
 find_component(libavcodec    libavcodec    avcodec  libavcodec/avcodec.h)
 find_component(libavformat   libavformat   avformat libavformat/avformat.h)
@@ -127,7 +127,6 @@ find_component(libavdevice   libavdevice   avdevice libavdevice/avdevice.h)
 find_component(libavutil     libavutil     avutil   libavutil/avutil.h)
 find_component(libavfilter   libavfilter   avfilter libavfilter/avfilter.h)
 find_component(libswscale    libswscale    swscale  libswscale/swscale.h)
-find_component(libpostproc   libpostproc   postproc libpostproc/postprocess.h)
 find_component(libswresample libswresample swresample libswresample/swresample.h)
 
 set(FFMPEG_LIBRARIES "")

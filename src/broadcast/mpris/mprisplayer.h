@@ -6,7 +6,6 @@
 
 #include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
-#include "mixxx.h"
 
 class PlayerManagerInterface;
 class DeckAttributes;

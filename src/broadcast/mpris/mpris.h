@@ -6,14 +6,12 @@
 #include "track/track.h"
 
 class MediaPlayer2Player;
-class MixxxMainWindow;
 class PlayerManagerInterface;
 
 class Mpris : public QObject {
     Q_OBJECT
   public:
-    explicit Mpris(MixxxMainWindow* mixxx,
-            PlayerManagerInterface* pPlayerManager,
+    explicit Mpris(PlayerManagerInterface* pPlayerManager,
             UserSettingsPointer pSettings);
     ~Mpris();
     void notifyPropertyChanged(const QString& interface,

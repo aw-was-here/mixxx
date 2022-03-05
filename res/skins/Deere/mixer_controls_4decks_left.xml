@@ -2,18 +2,18 @@
 <!--
   Description:
   A 4-deck mixer channel strip.
-  
+
   Structure:
   ⎡ Spacer that centers the level meter
   | vertically when neither EQs
   ⎣ nor Vol fader are shown
 
   [ Gain knob]
-  
+
   [ EQs + QuickEffect, optional ]
-  
+
   [ Pfl button ]
-  
+
   ⎡ with EQs                  ⎤
   | ⎡ with faders:
   | |   mono   + Vol
@@ -36,7 +36,7 @@
   ⎡ Spacer that centers the level meter
   | vertically when neither EQs
   ⎣ nor Vol fader are shown
-  
+
 -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
@@ -107,6 +107,23 @@
 
       <WidgetGroup>
         <Layout>vertical</Layout>
+        <Size>55f,</Size>
+        <Children>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelectorLeft</ObjectName>
+            <Size>-1min,18f</Size>
+            <EffectUnitGroup>[QuickEffectRack1_<Variable name="group"/>]</EffectUnitGroup>
+          </EffectChainPresetSelector>
+          <WidgetGroup><Size>,4f</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
 
@@ -141,7 +158,7 @@
             <SizePolicy>min,me</SizePolicy>
             <MaximumSize>60,-1</MaximumSize>
             <Children>
-              <!-- Faders 
+              <!-- Faders
               Vol fader next to mono VU meter
                   when EQs are shown -->
               <WidgetGroup>
@@ -180,12 +197,12 @@
                 </Connection>
               </WidgetGroup>
 
-              <!-- no Faders 
+              <!-- no Faders
                   stereo VU meter -->
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
-                <MaximumSize>60,210</MaximumSize>
+                <MaximumSize>60,180</MaximumSize>
                 <Children>
                   <SingletonContainer>
                     <ObjectName>StereoVUMeter<Variable name="i"/></ObjectName>
@@ -220,7 +237,7 @@
                   </SingletonContainer>
                 </Children>
               </WidgetGroup>
-              
+
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>

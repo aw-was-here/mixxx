@@ -4,7 +4,6 @@
 #include <QDBusConnection>
 #include <QDBusMessage>
 
-#include "mixxx.h"
 #include "moc_mediaplayer2player.cpp"
 
 MediaPlayer2Player::MediaPlayer2Player(PlayerManagerInterface* playerManager,

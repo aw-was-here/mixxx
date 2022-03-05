@@ -73,8 +73,7 @@ void TotalVolumeThreshold::setVolumeThreshold(double volume) {
 }
 
 ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
-        std::shared_ptr<PlayerManager> pPlayerManager,
-        MixxxMainWindow* pWindow)
+        std::shared_ptr<PlayerManager> pPlayerManager)
         : m_pPlayerManager(pPlayerManager),
           m_pAudibleStrategy(new TotalVolumeThreshold(this, 0.20)),
           m_pTimer(new TrackTimers::GUITickTimer),
@@ -92,7 +91,7 @@ ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
     m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
 #ifdef __MPRIS__
     m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(
-            new MprisService(pWindow, pPlayerManager.get(), pConfig)));
+            new MprisService(pPlayerManager.get(), pConfig)));
 #endif
 
     connect(pPlayerManager.get(),

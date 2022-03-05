@@ -5,32 +5,14 @@
 #include <QString>
 #include <QWidget>
 
-#include "mixxx.h"
 #include "moc_mediaplayer2.cpp"
 #include "sources/soundsourceproxy.h"
 
-MediaPlayer2::MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent)
-        : QDBusAbstractAdaptor(parent),
-          m_pMixxx(pMixxx) {
+MediaPlayer2::MediaPlayer2(QObject* parent)
+        : QDBusAbstractAdaptor(parent) {
 }
 
 bool MediaPlayer2::canQuit() const {
-    return true;
-}
-
-bool MediaPlayer2::fullscreen() const {
-    return m_pMixxx->isFullScreen();
-}
-
-void MediaPlayer2::setFullscreen(bool fullscreen) {
-    m_pMixxx->slotViewFullScreen(fullscreen);
-}
-
-bool MediaPlayer2::canSetFullscreen() const {
-    return true;
-}
-
-bool MediaPlayer2::canRaise() const {
     return true;
 }
 
@@ -61,10 +43,6 @@ QStringList MediaPlayer2::supportedMimeTypes() const {
         << QStringLiteral("audio/wav")
         << QStringLiteral("audio/x-wav");
     return ret;
-}
-
-void MediaPlayer2::Raise() {
-    m_pMixxx->raise();
 }
 
 void MediaPlayer2::Quit() {

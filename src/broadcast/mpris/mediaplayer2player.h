@@ -1,7 +1,5 @@
 #pragma once
 
-#include <mixxx.h>
-
 #include <QStringList>
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QtDBus/QDBusObjectPath>

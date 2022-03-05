@@ -3,6 +3,7 @@
 #include <QDir>
 
 #include "util/logger.h"
+#include "util/semanticversion.h"
 
 namespace mixxx {
 
@@ -10,8 +11,7 @@ namespace {
 
 const Logger kLogger("SoundSourceSndFile");
 
-const QStringList kSupportedFileExtensions = {
-        QStringLiteral("aif"),
+const QStringList kSupportedFileTypes = {
         QStringLiteral("aiff"),
         // ALAC/CAF has been added in version 1.0.26
         // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
@@ -22,19 +22,22 @@ const QStringList kSupportedFileExtensions = {
         QStringLiteral("wav"),
 };
 
-// SoundSourceProxyTest fails for version 1.0.30 and OGG files
+// SoundSourceProxyTest fails for version >= 1.0.30 and OGG files
 // https://github.com/libsndfile/libsndfile/issues/643
-const QLatin1String kVersionStringWithBrokenOggDecoding = QLatin1String("libsndfile-1.0.30");
+const mixxx::SemanticVersion kVersionStringWithBrokenOggDecoding(1, 0, 30);
 
-QStringList getSupportedFileExtensionsFiltered() {
-    auto supportedFileExtensions = kSupportedFileExtensions;
-    if (sf_version_string() == kVersionStringWithBrokenOggDecoding) {
+QStringList getSupportedFileTypesFiltered() {
+    auto supportedFileTypes = kSupportedFileTypes;
+    QString libsndfileVersion = sf_version_string();
+    int separatorIndex = libsndfileVersion.lastIndexOf("-");
+    auto semver = mixxx::SemanticVersion(libsndfileVersion.right(separatorIndex));
+    if (semver >= kVersionStringWithBrokenOggDecoding) {
         kLogger.info()
                 << "Disabling OGG decoding for"
-                << kVersionStringWithBrokenOggDecoding;
-        supportedFileExtensions.removeAll(QStringLiteral("ogg"));
+                << libsndfileVersion;
+        supportedFileTypes.removeAll(QStringLiteral("ogg"));
     }
-    return supportedFileExtensions;
+    return supportedFileTypes;
 };
 
 } // anonymous namespace
@@ -43,17 +46,17 @@ QStringList getSupportedFileExtensionsFiltered() {
 const QString SoundSourceProviderSndFile::kDisplayName = QStringLiteral("libsndfile");
 
 SoundSourceProviderSndFile::SoundSourceProviderSndFile()
-        : m_supportedFileExtensions(getSupportedFileExtensionsFiltered()) {
+        : m_supportedFileTypes(getSupportedFileTypesFiltered()) {
 }
 
-QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
-    return m_supportedFileExtensions;
+QStringList SoundSourceProviderSndFile::getSupportedFileTypes() const {
+    return m_supportedFileTypes;
 }
 
 SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
-            supportedFileExtension == QLatin1String("wav")) {
+        const QString& supportedFileType) const {
+    if (supportedFileType.startsWith(QLatin1String("aif")) ||
+            supportedFileType == QLatin1String("wav")) {
         // Default decoder for AIFF and WAV
         return SoundSourceProviderPriority::Default;
     } else {

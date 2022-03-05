@@ -16,7 +16,7 @@ void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
                     trackPeriod.m_msSinceEjection >
                             m_gracePeriodSeconds * 1000.0) ||
                 trackPeriod.m_firstTimeLoaded) {
-            for (auto& service : m_scrobblingServices) {
+            for (const auto& service : m_scrobblingServices) {
                 service->slotScrobbleTrack(pTrack);
             }
             trackPeriod.m_hasBeenEjected = false;

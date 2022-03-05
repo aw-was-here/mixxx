@@ -185,18 +185,6 @@ manpage.1: manpage.sgml
       </varlistentry>
       <varlistentry>
         <term>
-          <option>--pluginPath</option>
-          <replaceable class="parameter">&lt;PATH&gt;</replaceable>
-        </term>
-        <listitem>
-          <para>
-            Top-level directory where Mixxx should look for sound source
-            plugins in addition to default locations.
-          </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
           <option>--settingsPath</option>
           <replaceable class="parameter">&lt;PATH&gt;</replaceable>
         </term>
@@ -208,7 +196,7 @@ manpage.1: manpage.sgml
       </varlistentry>
       <varlistentry>
         <term>
-          <option>--controllerDebug/--midiDebug</option>
+          <option>--controllerDebug</option>
         </term>
         <listitem>
           <para>
@@ -360,6 +348,16 @@ manpage.1: manpage.sgml
         <listitem>
           <para>
             The &dhpackage; manual in pdf format.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <filename class='directory'>/usr/share/doc/mixxx/Mixxx-Keyboard-Shortcuts.pdf</filename>
+        </term>
+        <listitem>
+          <para>
+            An overview of the default keyboard shortcuts in pdf format.
           </para>
         </listitem>
       </varlistentry>

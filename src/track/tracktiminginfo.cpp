@@ -65,7 +65,7 @@ void TrackTimingInfo::slotCheckIfScrobbable() {
         return;
     }
     if ((msInTimer + m_playedMs) / 1000.0 >=
-                    m_pTrackPtr->getDurationInt() / 2.0 ||
+                    m_pTrackPtr->getDuration() / 2.0 ||
             (msInTimer + m_playedMs) / 1000.0 >= 240.0) {
         m_isTrackScrobbable = true;
         emit readyToBeScrobbled(m_pTrackPtr);

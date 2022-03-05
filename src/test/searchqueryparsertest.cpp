@@ -372,9 +372,9 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
         m_parser.parseQuery("bpm:127.12", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127);
+    pTrack->trySetBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -391,7 +391,7 @@ TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
         m_parser.parseQuery("bpm:", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127);
+    pTrack->trySetBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -408,9 +408,9 @@ TEST_F(SearchQueryParserTest, NumericFilterNegation) {
         m_parser.parseQuery("-bpm:127.12", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127);
+    pTrack->trySetBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -427,9 +427,9 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
         m_parser.parseQuery("bpm: 127.12", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127);
+    pTrack->trySetBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -446,9 +446,9 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
         m_parser.parseQuery("bpm:>127.12", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.13);
+    pTrack->trySetBpm(127.13);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("bpm > 127.12")),
@@ -456,27 +456,27 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
 
 
     pQuery = m_parser.parseQuery("bpm:>=127.12", searchColumns, "");
-    pTrack->setBpm(127.11);
+    pTrack->trySetBpm(127.11);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("bpm >= 127.12")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("bpm:<127.12", searchColumns, "");
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.11);
+    pTrack->trySetBpm(127.11);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("bpm < 127.12")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("bpm:<=127.12", searchColumns, "");
-    pTrack->setBpm(127.13);
+    pTrack->trySetBpm(127.13);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("bpm <= 127.12")),
@@ -492,11 +492,11 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
         m_parser.parseQuery("bpm:127.12-129", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(125);
+    pTrack->trySetBpm(125);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
-    pTrack->setBpm(129);
+    pTrack->trySetBpm(129);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -514,7 +514,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
                             searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(128);
+    pTrack->trySetBpm(128);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("Com Truise");
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -682,6 +682,12 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchWithOperators) {
     EXPECT_STREQ(
         qPrintable(QString("duration >= 63")),
         qPrintable(pQuery->toSql()));
+
+    // Seconds out of range
+    pQuery = m_parser.parseQuery("duration:>=1:60", searchColumns, "");
+    pTrack->setDuration(60);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    EXPECT_TRUE(pQuery->toSql().isEmpty());
 }
 
 TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
@@ -825,7 +831,6 @@ TEST_F(SearchQueryParserTest, ShortCrateFilter) {
     EXPECT_FALSE(pQuery->match(pTrackB));
     EXPECT_TRUE(pQuery->match(pTrackC));
 }
-
 
 TEST_F(SearchQueryParserTest, CrateFilterEmpty) {
     // Empty should match everything
@@ -989,4 +994,106 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
                  qPrintable("(" + m_crateFilterQuery.arg(searchTermAEsc) +
                             ") AND (NOT (" + m_crateFilterQuery.arg(searchTermB) + "))"),
                  qPrintable(pQueryB->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, SplitQueryIntoWords) {
+    QStringList rv = SearchQueryParser::splitQueryIntoWords(QString("a test b"));
+    QStringList ex = QStringList() << "a"
+                                   << "test"
+                                   << "b";
+    qDebug() << rv << ex;
+    EXPECT_EQ(rv, ex);
+
+    QStringList rv2 = SearchQueryParser::splitQueryIntoWords(QString("a \"test ' b\" x"));
+    QStringList ex2 = QStringList() << "a"
+                                    << "\"test ' b\""
+                                    << "x";
+    qDebug() << rv2 << ex2;
+    EXPECT_EQ(rv2, ex2);
+
+    QStringList rv3 = SearchQueryParser::splitQueryIntoWords(QString("a x"));
+    QStringList ex3 = QStringList() << "a"
+                                    << "x";
+    qDebug() << rv3 << ex3;
+    EXPECT_EQ(rv3, ex3);
+
+    QStringList rv4 = SearchQueryParser::splitQueryIntoWords(
+            QString("a crate:x title:\"S p A C e\" ~key:2m"));
+    QStringList ex4 = QStringList() << "a"
+                                    << "crate:x"
+                                    << "title:\"S p A C e\""
+                                    << "~key:2m";
+    qDebug() << rv4 << ex4;
+    EXPECT_EQ(rv4, ex4);
+}
+
+TEST_F(SearchQueryParserTest, QueryIsLessSpecific) {
+    // Generate a file name for the temporary file
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("searchme"),
+            QStringLiteral("searchm")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A B C"),
+            QStringLiteral("A C")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A B C"),
+            QStringLiteral("A D C")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A D C"),
+            QStringLiteral("A D C ")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A D  C "),
+            QStringLiteral("A D C")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A B  C"),
+            QStringLiteral("A D C")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A D C"),
+            QStringLiteral("A D C ")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A D  C "),
+            QStringLiteral("A D C")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A B  C"),
+            QStringLiteral("A D C")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("Abba1 Abba2 Abb"),
+            QStringLiteral("Abba1 Abba Abb")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("Abba1 Abba2 Abb"),
+            QStringLiteral("Abba1 Aba Abb")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("Abba1"),
+            QLatin1String("")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("Abba1"),
+            QStringLiteral("bba")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("crate:abc"),
+            QStringLiteral("crate:ab")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("crate:\"a b c\""),
+            QStringLiteral("crate:\"a c\"")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("-crate:\"a b c\""),
+            QStringLiteral("crate:\"a b c\"")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("-crate:\"a b c\""),
+            QStringLiteral("crate:\"a b c\"")));
 }

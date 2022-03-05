@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QThread>
+
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
+#include "controllers/hid/hidiothread.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 #include "util/duration.h"
 
@@ -17,54 +20,34 @@ class HidController final : public Controller {
 
     QString mappingExtension() override;
 
-    LegacyControllerMappingPointer getMapping() const override {
-        return LegacyControllerMappingPointer(
-                new LegacyHidControllerMapping(m_mapping));
-    }
-
-    void visit(const LegacyMidiControllerMapping* mapping) override;
-    void visit(const LegacyHidControllerMapping* mapping) override;
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
     bool isMappable() const override {
-        return m_mapping.isMappable();
+        if (!m_pMapping) {
+            return false;
+        }
+        return m_pMapping->isMappable();
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
 
   protected:
-    void sendReport(QList<int> data, unsigned int length, unsigned int reportID);
+    void sendReport(const QList<int>& data, unsigned int length, unsigned int reportID);
 
   private slots:
     int open() override;
     int close() override;
 
-    bool poll() override;
-
   private:
-    bool isPolling() const override;
-
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     void sendBytes(const QByteArray& data) override;
-    void sendBytesReport(QByteArray data, unsigned int reportID);
-    void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
-
-    // Returns a pointer to the currently loaded controller mapping. For internal
-    // use only.
-    LegacyControllerMapping* mapping() override {
-        return &m_mapping;
-    }
 
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
-    hid_device* m_pHidDevice;
-    LegacyHidControllerMapping m_mapping;
-
-    static constexpr int kNumBuffers = 2;
-    static constexpr int kBufferSize = 255;
-    unsigned char m_pPollData[kNumBuffers][kBufferSize];
-    int m_iLastPollSize;
-    int m_iPollingBufferIndex;
+    std::unique_ptr<HidIoThread> m_pHidIoThread;
+    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
 
     friend class HidControllerJSProxy;
 };
@@ -85,9 +68,41 @@ class HidControllerJSProxy : public ControllerJSProxy {
         m_pHidController->sendReport(data, length, reportID);
     }
 
+    // getInputReport receives an input report on request.
+    // This can be used on startup to initialize the knob positions in Mixxx
+    // to the physical position of the hardware knobs on the controller.
+    // The returned data structure for the input reports is the same
+    // as in the polling functionality (including ReportID in first byte).
+    // The returned list can be used to call the incomingData
+    // function of the common-hid-packet-parser.
+    Q_INVOKABLE QByteArray getInputReport(
+            unsigned int reportID) {
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return {};
+        }
+        return m_pHidController->m_pHidIoThread->getInputReport(reportID);
+    }
+
     Q_INVOKABLE void sendFeatureReport(
-            const QList<int>& dataList, unsigned int reportID) {
-        m_pHidController->sendFeatureReport(dataList, reportID);
+            const QByteArray& reportData, unsigned int reportID) {
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return;
+        }
+        m_pHidController->m_pHidIoThread->sendFeatureReport(reportData, reportID);
+    }
+    // getFeatureReport receives a feature reports on request.
+    // HID doesn't support polling feature reports, therefore this is the
+    // only method to get this information.
+    // Usually, single bits in a feature report need to be set without
+    // changing the other bits. The returned list matches the input
+    // format of sendFeatureReport, allowing it to be read, modified
+    // and sent it back to the controller.
+    Q_INVOKABLE QByteArray getFeatureReport(
+            unsigned int reportID) {
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return {};
+        }
+        return m_pHidController->m_pHidIoThread->getFeatureReport(reportID);
     }
 
   private:
