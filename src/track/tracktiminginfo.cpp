@@ -5,7 +5,7 @@
 TrackTimingInfo::TrackTimingInfo(TrackPointer pTrack)
         : m_pElapsedTimer(new TrackTimers::ElapsedTimerQt()),
           m_pTimer(new TrackTimers::GUITickTimer()),
-          m_pTrackPtr(pTrack),
+          m_pTrack(pTrack),
           m_playedMs(0),
           m_isTrackScrobbable(false),
           m_isTimerPaused(true) {
@@ -60,15 +60,15 @@ void TrackTimingInfo::slotCheckIfScrobbable() {
         msInTimer = m_pElapsedTimer->elapsed();
     else
         return;
-    if (!m_pTrackPtr) {
+    if (!m_pTrack) {
         qDebug() << "Track pointer is null when checking if track is scrobbable";
         return;
     }
     if ((msInTimer + m_playedMs) / 1000.0 >=
-                    m_pTrackPtr->getDuration() / 2.0 ||
+                    m_pTrack->getDuration() / 2.0 ||
             (msInTimer + m_playedMs) / 1000.0 >= 240.0) {
         m_isTrackScrobbable = true;
-        emit readyToBeScrobbled(m_pTrackPtr);
+        emit readyToBeScrobbled(m_pTrack);
     } else {
         m_pTimer->start(1000);
     }
@@ -83,7 +83,7 @@ bool TrackTimingInfo::isScrobbable() const {
 }
 
 void TrackTimingInfo::setTrackPointer(TrackPointer pTrack) {
-    m_pTrackPtr = pTrack;
+    m_pTrack = pTrack;
 }
 
 void TrackTimingInfo::slotGuiTick(double timeSinceLastTick) {

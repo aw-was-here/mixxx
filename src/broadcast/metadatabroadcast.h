@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QLinkedList>
 #include <QObject>
 #include <list>
 
@@ -54,5 +53,5 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
   private:
     unsigned int m_gracePeriodSeconds;
     QHash<TrackId, GracePeriod> m_trackedTracks;
-    QLinkedList<ScrobblingServicePtr> m_scrobblingServices;
+    std::list<ScrobblingServicePtr> m_scrobblingServices;
 };

@@ -1,7 +1,5 @@
 #include "broadcast/metadatabroadcast.h"
 
-#include <QLinkedListIterator>
-
 #include "mixer/playerinfo.h"
 #include "moc_metadatabroadcast.cpp"
 
@@ -16,7 +14,7 @@ void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
                     trackPeriod.m_msSinceEjection >
                             m_gracePeriodSeconds * 1000.0) ||
                 trackPeriod.m_firstTimeLoaded) {
-            for (const auto& service : m_scrobblingServices) {
+            for (const auto& service : qAsConst(m_scrobblingServices)) {
                 service->slotScrobbleTrack(pTrack);
             }
             trackPeriod.m_hasBeenEjected = false;

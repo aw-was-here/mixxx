@@ -11,8 +11,8 @@ MediaPlayer2TrackList::MediaPlayer2TrackList(QObject* parent)
 MediaPlayer2TrackList::~MediaPlayer2TrackList() {
 }
 
-TrackIds MediaPlayer2TrackList::tracks() const {
-    TrackIds tracks;
+MprisTrackIds MediaPlayer2TrackList::tracks() const {
+    MprisTrackIds tracks;
     return tracks;
 }
 
@@ -20,11 +20,11 @@ bool MediaPlayer2TrackList::canEditTracks() const {
     return false;
 }
 
-TrackMetadata MediaPlayer2TrackList::GetTracksMetadata(
-        const TrackIds& tracks) const {
+MprisTrackMetadata MediaPlayer2TrackList::GetTracksMetadata(
+        const MprisTrackIds& tracks) const {
     Q_UNUSED(tracks);
 
-    TrackMetadata metadata;
+    MprisTrackMetadata metadata;
     return metadata;
 }
 

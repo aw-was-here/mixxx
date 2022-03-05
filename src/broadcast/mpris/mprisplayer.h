@@ -55,6 +55,7 @@ class MprisPlayer : public QObject {
   private:
     void broadcastPropertiesChange(bool enabled);
     void requestMetadataFromTrack(TrackPointer pTrack, bool requestCover);
+    void requestTrackUrl(TrackPointer pTrack);
     void requestCoverartUrl(TrackPointer pTrack);
     void broadcastCurrentMetadata();
     QVariantMap getVariantMapMetadata();
@@ -87,6 +88,7 @@ class MprisPlayer : public QObject {
         QString album;
         int userRating;
         int useCount;
+        QString trackUrl;
     };
 
     CurrentMetadata m_currentMetadata;

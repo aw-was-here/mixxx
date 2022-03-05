@@ -83,7 +83,6 @@ QString MprisPlayer::playbackStatus() const {
     int playingDeckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
     if (playingDeckIndex >= 0 && playingDeckIndex < m_deckAttributes.size()) {
         // We have a playing deck
-        qDebug() << kPlaybackStatusPlaying;
         return kPlaybackStatusPlaying;
     }
     if (autoDjEnabled()) {
@@ -273,7 +272,7 @@ qlonglong MprisPlayer::setPosition(
             success = false;
             return 0;
         }
-        int id = path.rightRef(path.size() - lastSlashIndex - 1).toInt();
+        int id = QStringView(path).right(path.size() - lastSlashIndex - 1).toInt();
         if (id != playingDeck->getLoadedTrack()->getId().value()) {
             success = false;
             return 0;
@@ -310,6 +309,15 @@ void MprisPlayer::broadcastPropertiesChange(bool enabled) {
     }
 }
 
+void MprisPlayer::requestTrackUrl(TrackPointer pTrack) {
+    QUrl fileUrl = QUrl::fromLocalFile(pTrack->getLocation());
+    if (!fileUrl.isValid()) {
+        qDebug() << "Invalid URL: " << fileUrl;
+        return;
+    }
+    m_currentMetadata.trackUrl = fileUrl.toString();
+}
+
 void MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCover) {
     if (!pTrack) {
         return;
@@ -329,6 +337,7 @@ void MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCove
     m_currentMetadata.album = pTrack->getAlbum();
     m_currentMetadata.userRating = pTrack->getRating();
     m_currentMetadata.useCount = pTrack->getTimesPlayed();
+    requestTrackUrl(pTrack);
 }
 
 void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
@@ -414,7 +423,7 @@ void MprisPlayer::slotCoverArtFound(const QObject* requestor,
     if (!pixmap.isNull() && requestor == this) {
         QImage coverImage = pixmap.toImage();
         m_currentCoverArtFile.open();
-        bool success = coverImage.save(&m_currentCoverArtFile, "JPG");
+        bool success = coverImage.save(&m_currentCoverArtFile, "PNG");
         if (!success) {
             qDebug() << "Couldn't write metadata cover art";
             return;
@@ -445,6 +454,7 @@ QVariantMap MprisPlayer::getVariantMapMetadata() {
     metadata.insert("xesam:album", m_currentMetadata.album);
     metadata.insert("xesam:userRating", m_currentMetadata.userRating);
     metadata.insert("xesam:useCount", m_currentMetadata.useCount);
+    metadata.insert("xesam:url", m_currentMetadata.trackUrl);
     return metadata;
 }
 

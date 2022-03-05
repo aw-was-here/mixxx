@@ -3,7 +3,6 @@
 #pragma once
 
 #include <QHash>
-#include <QLinkedList>
 #include <QObject>
 #include <QSet>
 #include <QString>

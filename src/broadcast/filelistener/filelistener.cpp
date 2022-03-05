@@ -50,6 +50,7 @@ void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
         m_fileContents.artist = pTrack->getArtist();
         QString writtenString(m_latestSettings.fileFormatString);
         writtenString.replace("{{ track.artist }}", pTrack->getArtist())
+                .replace("{{ track.filename }}", pTrack->getLocation())
                 .replace("{{ track.title }}", pTrack->getTitle()) += '\n';
         QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
         DEBUG_ASSERT(codec);

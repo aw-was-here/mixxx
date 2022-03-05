@@ -29,7 +29,7 @@ class TrackTimingInfo : public QObject {
   private:
     std::unique_ptr<TrackTimers::ElapsedTimer> m_pElapsedTimer;
     std::unique_ptr<TrackTimers::RegularTimer> m_pTimer;
-    TrackPointer m_pTrackPtr;
+    TrackPointer m_pTrack;
     qint64 m_playedMs;
     bool m_isTrackScrobbable;
     bool m_isTimerPaused;

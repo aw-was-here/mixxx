@@ -2,7 +2,6 @@
 
 #include <QElapsedTimer>
 #include <QList>
-#include <QMetaObject>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QObject>
@@ -20,8 +19,6 @@
 #include "util/fileaccess.h"
 #include "util/memory.h"
 #include "waveform/waveform.h"
-
-struct Connection;
 
 class Track : public QObject {
     Q_OBJECT
@@ -590,8 +587,6 @@ class Track : public QObject {
 
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
-
-    QMetaObject::Connection m_timerConnection;
 
     friend class TrackDAO;
     void setHeaderParsedFromTrackDAO(bool headerParsed) {

@@ -13,7 +13,22 @@ MediaPlayer2::MediaPlayer2(QObject* parent)
 }
 
 bool MediaPlayer2::canQuit() const {
-    return true;
+    return false;
+}
+
+bool MediaPlayer2::fullscreen() const {
+    return false;
+}
+
+void MediaPlayer2::setFullscreen([[maybe_unused]]bool fullscreen) {
+}
+
+bool MediaPlayer2::canSetFullscreen() const {
+    return false;
+}
+
+bool MediaPlayer2::canRaise() const {
+    return false;
 }
 
 bool MediaPlayer2::hasTrackList() const {
@@ -46,5 +61,4 @@ QStringList MediaPlayer2::supportedMimeTypes() const {
 }
 
 void MediaPlayer2::Quit() {
-    QApplication::quit();
 }

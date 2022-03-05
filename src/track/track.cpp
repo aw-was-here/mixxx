@@ -1,7 +1,6 @@
 #include "track/track.h"
 
 #include <QDirIterator>
-#include <Qt>
 #include <atomic>
 
 #include "engine/engine.h"
