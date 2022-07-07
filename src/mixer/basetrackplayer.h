@@ -36,6 +36,7 @@ class BaseTrackPlayer : public BasePlayer {
     ~BaseTrackPlayer() override = default;
 
     virtual TrackPointer getLoadedTrack() const = 0;
+    virtual void setupEqControls() = 0;
 
     virtual bool isTrackPaused() const {
         return false;
@@ -78,7 +79,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // connected. Delete me when EngineMaster supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
-    void setupEqControls();
+    void setupEqControls() final;
 
     // For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);

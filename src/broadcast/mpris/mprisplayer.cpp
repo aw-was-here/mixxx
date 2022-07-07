@@ -50,9 +50,7 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
             &MprisPlayer::slotPlayingTrackChanged);
 
     for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
-        DeckAttributes* attributes = new DeckAttributes(i,
-                m_pPlayerManager->getDeck(i),
-                i % 2 == 0 ? EngineChannel::RIGHT : EngineChannel::LEFT);
+        DeckAttributes* attributes = new DeckAttributes(i, m_pPlayerManager->getDeck(i));
         m_deckAttributes.append(attributes);
         connect(attributes, &DeckAttributes::playChanged, this, &MprisPlayer::slotPlayChanged);
         connect(attributes,
