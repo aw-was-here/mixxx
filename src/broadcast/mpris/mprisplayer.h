@@ -59,6 +59,7 @@ class MprisPlayer : public QObject {
     void broadcastPropertiesChange(bool enabled);
     void requestMetadataFromTrack(TrackPointer pTrack, bool requestCover);
     void requestCoverartUrl(TrackPointer pTrack);
+    void requestTrackUrl(TrackPointer pTrack);
     void broadcastCurrentMetadata();
     QVariantMap getVariantMapMetadata();
     DeckAttributes* findPlayingDeck() const;
@@ -87,6 +88,7 @@ class MprisPlayer : public QObject {
         QStringList artists;
         QString title;
         QString coverartUrl;
+        QString trackUrl;
         QString album;
         int userRating;
         int useCount;
