@@ -310,6 +310,15 @@ void MprisPlayer::broadcastPropertiesChange(bool enabled) {
     }
 }
 
+void MprisPlayer::requestTrackUrl(TrackPointer pTrack) {
+    QUrl fileUrl = QUrl::fromLocalFile(pTrack->getLocation());
+    if (!fileUrl.isValid()) {
+        qDebug() << "Invalid URL: " << fileUrl;
+        return;
+    }
+    m_currentMetadata.trackUrl = fileUrl.toString();
+}
+
 void MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCover) {
     if (!pTrack) {
         return;
@@ -329,6 +338,7 @@ void MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCove
     m_currentMetadata.album = pTrack->getAlbum();
     m_currentMetadata.userRating = pTrack->getRating();
     m_currentMetadata.useCount = pTrack->getTimesPlayed();
+    requestTrackUrl(pTrack);
 }
 
 void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
@@ -445,6 +455,7 @@ QVariantMap MprisPlayer::getVariantMapMetadata() {
     metadata.insert("xesam:album", m_currentMetadata.album);
     metadata.insert("xesam:userRating", m_currentMetadata.userRating);
     metadata.insert("xesam:useCount", m_currentMetadata.useCount);
+    metadata.insert("xesam:url", m_currentMetadata.trackUrl);
     return metadata;
 }
 
