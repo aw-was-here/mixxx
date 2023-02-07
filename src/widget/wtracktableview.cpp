@@ -345,6 +345,12 @@ void WTrackTableView::initTrackMenu() {
             [this](bool visible) {
                 emit trackMenuVisible(visible);
             });
+    // after removing tracks from the view via track menu, restore a usable
+    // selection/currentIndex for navigation via keyboard & controller
+    connect(m_pTrackMenu,
+            &WTrackMenu::restoreCurrentIndex,
+            this,
+            &WTrackTableView::slotrestoreCurrentIndex);
 }
 
 // slot
@@ -440,9 +446,12 @@ void WTrackTableView::slotPurge() {
         return;
     }
     TrackModel* trackModel = getTrackModel();
-    if (trackModel) {
-        trackModel->purgeTracks(indices);
+    if (!trackModel) {
+        return;
     }
+    saveCurrentIndex();
+    trackModel->purgeTracks(indices);
+    restoreCurrentIndex();
 }
 
 void WTrackTableView::slotDeleteTracksFromDisk() {
@@ -450,8 +459,10 @@ void WTrackTableView::slotDeleteTracksFromDisk() {
     if (indices.isEmpty()) {
         return;
     }
+    saveCurrentIndex();
     m_pTrackMenu->loadTrackModelIndices(indices);
     m_pTrackMenu->slotRemoveFromDisk();
+    // WTrackmenu emits restoreCurrentIndex()
 }
 
 void WTrackTableView::slotUnhide() {
@@ -460,9 +471,12 @@ void WTrackTableView::slotUnhide() {
         return;
     }
     TrackModel* trackModel = getTrackModel();
-    if (trackModel) {
-        trackModel->unhideTracks(indices);
+    if (!trackModel) {
+        return;
     }
+    saveCurrentIndex();
+    trackModel->unhideTracks(indices);
+    restoreCurrentIndex();
 }
 
 void WTrackTableView::slotShowHideTrackMenu(bool show) {
@@ -474,7 +488,9 @@ void WTrackTableView::slotShowHideTrackMenu(bool show) {
         return;
     }
     if (show) {
-        QContextMenuEvent event(QContextMenuEvent::Mouse, QCursor::pos());
+        QContextMenuEvent event(QContextMenuEvent::Mouse,
+                mapFromGlobal(QCursor::pos()),
+                QCursor::pos());
         contextMenuEvent(&event);
     } else {
         m_pTrackMenu->close();
@@ -490,8 +506,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     QModelIndexList indices = selectionModel()->selectedRows();
     m_pTrackMenu->loadTrackModelIndices(indices);
 
+    saveCurrentIndex();
+
     // Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
+    // WTrackmenu emits restoreCurrentIndex() if required
 }
 
 void WTrackTableView::onSearch(const QString& text) {
@@ -502,15 +521,12 @@ void WTrackTableView::onSearch(const QString& text) {
                 trackModel->currentSearch(), text);
         QList<TrackId> selectedTracks = getSelectedTrackIds();
         TrackId prevTrack = getCurrentTrackId();
-        int prevColumn = 0;
-        if (currentIndex().isValid()) {
-            prevColumn = currentIndex().column();
-        }
+        saveCurrentIndex();
         trackModel->search(text);
         if (queryIsLessSpecific) {
             // If the user removed query terms, we try to select the same
             // tracks as before
-            setCurrentTrackId(prevTrack, prevColumn);
+            setCurrentTrackId(prevTrack, m_prevColumn);
             setSelectedTracks(selectedTracks);
         } else {
             // The user created a more specific search query, try to restore a
@@ -518,7 +534,11 @@ void WTrackTableView::onSearch(const QString& text) {
             if (!restoreCurrentViewState()) {
                 // We found no saved state for this query, try to select the
                 // tracks last active, if they are part of the result set
-                setCurrentTrackId(prevTrack, prevColumn);
+                if (!setCurrentTrackId(prevTrack, m_prevColumn)) {
+                    // if the last focused track is not present try to focus the
+                    // respective index and scroll there
+                    restoreCurrentIndex();
+                }
                 setSelectedTracks(selectedTracks);
             }
         }
@@ -819,35 +839,6 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             return;
         }
     } break;
-    case Qt::Key_Home: { // Jump to first row
-        if (model()->rowCount() == 0) {
-            return;
-        }
-        int currCol = 0;
-        QModelIndex currIdx = currentIndex();
-        if (currIdx.isValid()) {
-            currCol = currIdx.column();
-        }
-        QModelIndex newIdx = model()->index(0, currCol);
-        selectionModel()->setCurrentIndex(newIdx,
-                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
-        scrollTo(newIdx);
-    } break;
-    case Qt::Key_End: { // Jump to last row
-        const int lastRow = model()->rowCount() - 1;
-        if (lastRow == -1) {
-            return;
-        }
-        int currCol = 0;
-        QModelIndex currIdx = currentIndex();
-        if (currIdx.isValid()) {
-            currCol = currIdx.column();
-        }
-        QModelIndex newIdx = model()->index(lastRow, currCol);
-        selectionModel()->setCurrentIndex(newIdx,
-                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
-        scrollTo(newIdx);
-    } break;
     default:
         QTableView::keyPressEvent(event);
     }
@@ -863,6 +854,8 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     if (!pTrackModel) {
         return;
     }
+
+    saveCurrentIndex();
 
     QMessageBox::StandardButton response;
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
@@ -897,6 +890,7 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
             pTrackModel->removeTracks(indices);
         }
     }
+    restoreCurrentIndex();
 }
 
 void WTrackTableView::activateSelectedTrack() {

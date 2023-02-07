@@ -47,7 +47,6 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "skin/skinloader.h"
 #include "util/color/color.h"
 #include "util/widgethelper.h"
 
@@ -65,6 +64,19 @@ DlgPreferences::DlgPreferences(
           m_pageSizeHint(QSize(0, 0)) {
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
+
+    // Add '&' to default button labels to always have Alt shortcuts, indpependent
+    // of operating system.
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Help)->setText(tr("&Help"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::RestoreDefaults)->setText(tr("&Restore Defaults"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Apply)->setText(tr("&Apply"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Ok)->setText(tr("&Ok"));
 
     connect(buttonBox,
             QOverload<QAbstractButton*>::of(&QDialogButtonBox::clicked),

@@ -221,8 +221,8 @@ void WTrackMenu::createMenus() {
 void WTrackMenu::createActions() {
     const auto hideRemoveKeySequence =
             // TODO(XXX): Qt6 replace enum | with QKeyCombination
-            QKeySequence(static_cast<int>(kPropertiesShortcutModifier) |
-                    kPropertiesShortcutKey);
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
 
     if (featureIsEnabled(Feature::AutoDJ)) {
         m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
@@ -1203,27 +1203,25 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
     const PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                              ->internalCollection()
                                              ->getPlaylistDAO();
-    QMap<QString, int> playlists;
-    int numPlaylists = playlistDao.playlistCount();
-    for (int i = 0; i < numPlaylists; ++i) {
-        int iPlaylistId = playlistDao.getPlaylistId(i);
-        playlists.insert(playlistDao.getPlaylistName(iPlaylistId), iPlaylistId);
-    }
-    QMapIterator<QString, int> it(playlists);
-    while (it.hasNext()) {
-        it.next();
-        if (!playlistDao.isHidden(it.value())) {
-            // No leak because making the menu the parent means they will be
-            // auto-deleted
-            auto* pAction = new QAction(
-                    mixxx::escapeTextPropertyWithoutShortcuts(it.key()),
-                    m_pPlaylistMenu);
-            bool locked = playlistDao.isPlaylistLocked(it.value());
-            pAction->setEnabled(!locked);
-            m_pPlaylistMenu->addAction(pAction);
-            int iPlaylistId = it.value();
-            connect(pAction, &QAction::triggered, this, [this, iPlaylistId] { addSelectionToPlaylist(iPlaylistId); });
-        }
+    QList<QPair<int, QString>> playlists =
+            playlistDao.getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
+
+    for (const auto& [id, name] : playlists) {
+        // No leak because making the menu the parent means they will be
+        // auto-deleted
+        int plId = id;
+        auto* pAction = new QAction(
+                mixxx::escapeTextPropertyWithoutShortcuts(name),
+                m_pPlaylistMenu);
+        bool locked = playlistDao.isPlaylistLocked(plId);
+        pAction->setEnabled(!locked);
+        m_pPlaylistMenu->addAction(pAction);
+        connect(pAction,
+                &QAction::triggered,
+                this,
+                [this, plId] {
+                    addSelectionToPlaylist(plId);
+                });
     }
     m_pPlaylistMenu->addSeparator();
     QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
@@ -2048,6 +2046,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
     if (tracksToKeep.isEmpty()) {
         // All selected tracks could be processed. Finish!
+        emit restoreCurrentIndex();
         return;
     }
     // Else show a message with a list of tracks that could not be deleted.
@@ -2086,6 +2085,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     // Required for being able to close the dialog
     connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
     dlgNotDeleted.exec();
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotShowDlgTrackInfo() {
@@ -2224,6 +2224,7 @@ void WTrackMenu::slotRemove() {
         return;
     }
     m_pTrackModel->removeTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotHide() {
@@ -2231,6 +2232,7 @@ void WTrackMenu::slotHide() {
         return;
     }
     m_pTrackModel->hideTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotUnhide() {
@@ -2238,6 +2240,7 @@ void WTrackMenu::slotUnhide() {
         return;
     }
     m_pTrackModel->unhideTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotPurge() {
@@ -2245,6 +2248,7 @@ void WTrackMenu::slotPurge() {
         return;
     }
     m_pTrackModel->purgeTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::clearTrackSelection() {
