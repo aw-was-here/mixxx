@@ -554,8 +554,8 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // called every time the mouse is moved -- kain88 May 2012
     if (pEvent->buttons() != Qt::LeftButton) {
         // Needed for mouse-tracking to fire entered() events. If we call this
-        // outside of this if statement then we get 'ghost' drags. See Bug
-        // #1008737
+        // outside of this if statement then we get 'ghost' drags. See issue
+        // #6507
         WLibraryTableView::mouseMoveEvent(pEvent);
         return;
     }
@@ -855,41 +855,70 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
         return;
     }
 
-    saveCurrentIndex();
-
-    QMessageBox::StandardButton response;
+    TrackModel::Capability cap;
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
-        // Hide tracks if this is the main library table
-        response = QMessageBox::question(this,
-                tr("Confirm track hide"),
-                tr("Are you sure you want to hide the selected tracks?"),
-                QMessageBox::Yes | QMessageBox::No,
-                QMessageBox::No);
-        if (response == QMessageBox::Yes) {
-            pTrackModel->hideTracks(indices);
-        }
+        cap = TrackModel::Capability::Hide;
+    } else if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
+        cap = TrackModel::Capability::Remove;
+    } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
+        cap = TrackModel::Capability::RemoveCrate;
+    } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
+        cap = TrackModel::Capability::RemovePlaylist;
     } else {
-        // Else remove the tracks from AutoDJ/crate/playlist
+        return;
+    }
+
+    if (pTrackModel->getRequireConfirmationToHideRemoveTracks()) {
+        QString title;
         QString message;
-        if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
-            message = tr("Are you sure you want to remove the selected tracks from AutoDJ queue?");
-        } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
-            message = tr("Are you sure you want to remove the selected tracks from this crate?");
-        } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
-            message = tr("Are you sure you want to remove the selected tracks from this playlist?");
+        if (cap == TrackModel::Capability::Hide) {
+            // Hide tracks if this is the main library table
+            title = tr("Confirm track hide");
+            message = tr("Are you sure you want to hide the selected tracks?");
         } else {
+            title = tr("Confirm track removal");
+            // Else remove the tracks from AutoDJ/crate/playlist
+            if (cap == TrackModel::Capability::Remove) {
+                message =
+                        tr("Are you sure you want to remove the selected "
+                           "tracks from AutoDJ queue?");
+            } else if (cap == TrackModel::Capability::RemoveCrate) {
+                message =
+                        tr("Are you sure you want to remove the selected "
+                           "tracks from this crate?");
+            } else { // TrackModel::Capability::RemovePlaylist
+                message =
+                        tr("Are you sure you want to remove the selected "
+                           "tracks from this playlist?");
+            }
+        }
+
+        QMessageBox msg;
+        msg.setIcon(QMessageBox::Question);
+        msg.setWindowTitle(title);
+        msg.setText(message);
+        QCheckBox notAgainCB(tr("Don't ask again during this session"));
+        notAgainCB.setCheckState(Qt::Unchecked);
+        msg.setCheckBox(&notAgainCB);
+        msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msg.setDefaultButton(QMessageBox::Cancel);
+        if (msg.exec() != QMessageBox::Ok) {
             return;
         }
 
-        response = QMessageBox::question(this,
-                tr("Confirm track removal"),
-                message,
-                QMessageBox::Yes | QMessageBox::No,
-                QMessageBox::No);
-        if (response == QMessageBox::Yes) {
-            pTrackModel->removeTracks(indices);
+        if (notAgainCB.isChecked()) {
+            pTrackModel->setRequireConfirmationToHideRemoveTracks(false);
         }
     }
+
+    saveCurrentIndex();
+
+    if (cap == TrackModel::Capability::Hide) {
+        pTrackModel->hideTracks(indices);
+    } else {
+        pTrackModel->removeTracks(indices);
+    }
+
     restoreCurrentIndex();
 }
 
@@ -993,6 +1022,9 @@ TrackId WTrackTableView::getCurrentTrackId() const {
 }
 
 bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return false;
+    }
     //qDebug() << "WTrackTableView::isTrackInCurrentView" << trackId;
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
@@ -1028,6 +1060,10 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
 }
 
 bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column, bool scrollToTrack) {
+    if (!trackId.isValid()) {
+        return false;
+    }
+
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selection model";
@@ -1095,8 +1131,10 @@ void WTrackTableView::slotAddToAutoDJReplace() {
 }
 
 void WTrackTableView::slotSelectTrack(const TrackId& trackId) {
-    if (setCurrentTrackId(trackId, 0, true)) {
+    if (trackId.isValid() && setCurrentTrackId(trackId, 0, true)) {
         setSelectedTracks({trackId});
+    } else {
+        setSelectedTracks({});
     }
 }
 
